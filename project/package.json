@@ -10,14 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
     "@georgedoescode/spline": "^1.0.1",
+    "@tailwindcss/vite": "^4.1.16",
+    "axios": "^1.13.2",
+    "cors": "^2.8.6",
     "framer-motion": "^12.23.12",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "simplex-noise": "^4.0.3",
     "spline": "^0.0.0",
+    "styled-components": "^6.1.19",
     "styles": "^0.2.1",
-    "swiper": "^11.2.10"
+    "swiper": "^11.2.10",
+    "tailwindcss": "^4.1.16"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

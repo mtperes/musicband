@@ -1,63 +1,65 @@
-import React from 'react';
+import React, { useRef } from "react";
 
-
+import { motion, useScroll, useTransform } from "framer-motion";
+import videoSrc from "../assets/banner-video.mov";
 
 
 const Banner: React.FC = () => {
-    return (
-        <section style={styles.banner}>
+  const targetRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start end", "end start"],
+  });
 
-        
-            
-            
+  const scale = useTransform(scrollYProgress, [0, 1], [1.5, 0.75]);
+  const y = useTransform(scrollYProgress, [0, 1], [250, -250]);
 
-            <h1 style={styles.title}>A fanfarra mais divertida de Lisboa</h1>
-            <h3 style={styles.subtitle}>Desde 2019 Fazendo Carnaval em Lisboa!</h3>
-        </section>
-    );
+  const opacity = useTransform(scrollYProgress, [0.25, 0.5, 0.75], [1, 1, 0]);
+  return (
+    <section id='home' style={styles.banner}>
+    
+    <div className="relative h-screen overflow-clip"> 
+        <motion.div
+          style={{
+            position: "relative" as const,
+            backgroundImage: `url(${videoSrc})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            // height: `calc(100vh - 10px)`,
+            // top: 5,
+            opacity,
+            y,
+            borderRadius: "0px",
+            overflow: "hidden",
+            scale,
+          }}
+          ref={targetRef}
+        >
+          <video
+            className="banner-video object-cover w-screen h-screen"
+            src={videoSrc}
+            title="Sardinahs nomades video"
+            autoPlay
+            loop
+            muted
+          ></video>
+        </motion.div>
+      </div>
+    </section>
+  );
 };
 
 const styles = {
-    banner: {
-      
-        textAlign: 'left' as const,
-        padding: '10%',
-        border: '3px solid teal',
-    },
-    title: {
+  banner: {
+    position: "relative" as const,
+    textAlign: "left" as const,
+    width: "100%",
+    padding: "0",
 
-        color: 'teal',
-        fontSize: '74px',
-        marginTop: "20%",
-    },
-     subtitle: {
-        color: 'midnightblue',
-        fontSize: '34px',
-        margin: 0,
-    },
-    logo:{
-        position: 'absolute' as const,
-        top: '0',
-        left: '0',    
-        width: '30rem',
-        height: '30rem',
-        objectFit: 'cover' as const,
-        opacity: 1,
-        zIndex: -1,
-        
-        
-    },
-     video: {
-        position: 'absolute' as const,
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: 'auto',
-        objectFit: 'cover' as const,
-        opacity: 0,
-        zIndex: -1,
-        filter: 'blur(2px)',
-    },
+   
+  },
 };
 
 export default Banner;
+
+

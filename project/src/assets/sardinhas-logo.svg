@@ -10,11 +10,11 @@
             <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%"> 
                
                  <stop offset="0%" stop-color="#4e248c">
-                    <animate attributeName="stop-color" values=" #4e248c ;  #012b5e; #04bfbf ; #ff903e ; #ff594b; #4e248c ;  #012b5e; #04bfbf ; #ff903e ; #ff594b;" dur="20s" repeatCount="indefinite"/>
+                    <animate attributeName="stop-color" values=" #4e248c ;  #012b5e; #04bfbf ; #ff903e ; #ff594b; #4e248c ;  #012b5e; #04bfbf ; #ff903e ; #ff594b;" dur="90s" repeatCount="indefinite"/>
                 </stop> 
             
                 <stop offset="100%" stop-color="#ff594b">
-                    <animate attributeName="stop-color" values="#ff594b; #ff903e ; #04bfbf ; #012b5e; #4e248c ; #ff594b; #ff903e ; #04bfbf ; #012b5e; #4e248c ;" dur="20s" repeatCount="indefinite"/>
+                    <animate attributeName="stop-color" values="#ff594b; #ff903e ; #04bfbf ; #012b5e; #4e248c ; #ff594b; #ff903e ; #04bfbf ; #012b5e; #4e248c ;" dur="190s" repeatCount="indefinite"/>
                 </stop>               
       
             </linearGradient> 

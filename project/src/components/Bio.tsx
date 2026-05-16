@@ -1,40 +1,52 @@
 import React from 'react';
 import '../index.css';
-import imgSrc from"../assets/foto-sardinhas.jpg";
+// import imgSrc from"../assets/foto-sardinhas.jpg";
+// import { b } from 'framer-motion/client';
+import SectionTilte from './sectionTitle';
 
 const Bio: React.FC = () => {
     return (
       
         <section style={styles.bio} className='bio' id="bio"> 
-            <div style={styles.fadeTop}></div> 
+            {/* <div style={styles.fadeTop}></div> 
             <div style={styles.fadeBottom}></div>  
-            
-            <h1 style={styles.title}>My App BIO text! hello world !</h1>
-            <article> Pork chop boudin beef cow. Ball tip meatball frankfurter beef hamburger, leberkas beef ribs jowl spare ribs venison. Chuck meatloaf meatball pork chop ground round ball tip drumstick salami rump chicken. Jerky shank doner corned beef, tri-tip turkey shoulder boudin ham hock. Beef chislic ham hock corned beef spare ribs short ribs jerky biltong fatback sausage meatball porchetta.</article>
-            <img style={styles.img} src={imgSrc} alt="Bio" />
+              <img style={styles.img} src={imgSrc} alt="Bio"/> */}
+           <SectionTilte titleText="O Cardume" />
+            <article style={styles.text} className='md:mx-10 lg:mx-80 p-5  bg-sky-500/55  rounded-4xl font-(family-name:--font1family) text-justify'> A Sardinhas Nômades é uma vibrante fanfarra formada em 2020, 
+              composta por talentosos músicos que dominam percussão, saxofones, trompetes e trombones. 
+              Com uma mistura eletrizante de ritmos brasileiros como carnaval, samba e axé, além de toques globais de funk e electro,
+               nossos espetáculos são uma explosão de energia e irreverência que contagia qualquer plateia.
+                Nosso principal objetivo é trazer a essência do carnaval brasileiro para Lisboa, 
+                criando experiências inesquecíveis e unindo culturas através da música. Venha se divertir conosco e sentir 
+                o verdadeiro espírito festivo que só a Sardinhas Nômades pode proporcionar!</article>
+          
            
         </section>
     );
 };
 
-document.body.addEventListener("pointermove", (e)=>{
-  const { currentTarget: el, clientX: x, clientY: y } = e;
-  if (el instanceof HTMLElement) {
-    const { top: t, left: l, width: w, height: h } = el.getBoundingClientRect();
-    el.style.setProperty('--posX', `${x - l - w / 2}`);
-    el.style.setProperty('--posY', `${y - t - h / 2}`);
-  }
-})
+
 const styles = {
   
     bio: {
         position:'relative' as const,
         textAlign: 'center' as const,
+        height: '100vh',
+        fontFamily: 'Barrio',
+
     },
     title: {
-        color: 'tomato',
         fontSize: '74px',
         margin: 0,
+        paddingTop: '2rem',
+        paddingBottom: '2rem',
+        zIndex: 2,
+    },
+     text: {
+         textAlign: 'center' as const,
+        paddingTop: '2rem',
+        paddingBottom: '2rem',
+        zIndex: 2,
     },
     img:{
       position:'absolute' as const,

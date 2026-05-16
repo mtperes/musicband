@@ -1,62 +1,49 @@
+// import { rect } from 'framer-motion/client';
 import React from 'react';
-
-
+// import { keyframes } from '@emotion/react';
+import imgSrc from"../assets/carnaval-photo.jpg";
+import imgSrc2 from"../assets/GalaCriCri-09-03-2023-008.jpeg";
+import SectionTilte from './sectionTitle';
 
 const Events: React.FC = () => {
+
     return (
-        <section id='events' style={styles.header}>
+        <section className='block justify-center' id='events'>
 
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 919" preserveAspectRatio="xMidYMid" width="1920" height="919" ><g data-idx="1"><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-0" data-idx="2">
-  <stop offset="0" stop-color="#081c54" data-idx="3"></stop>
-  <stop offset="1" stop-color="#225ea8" data-idx="4"></stop>
-</linearGradient><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-1" data-idx="5">
-  <stop offset="0" stop-color="#225ea8" data-idx="6"></stop>
-  <stop offset="1" stop-color="#1d91c0" data-idx="7"></stop>
-</linearGradient><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-2" data-idx="8">
-  <stop offset="0" stop-color="#1d91c0" data-idx="9"></stop>
-  <stop offset="1" stop-color="#41b6c4" data-idx="10"></stop>
-</linearGradient><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-3" data-idx="11">
-  <stop offset="0" stop-color="#41b6c4" data-idx="12"></stop>
-  <stop offset="1" stop-color="#7fcdbb" data-idx="13"></stop>
-</linearGradient><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-4" data-idx="14">
-  <stop offset="0" stop-color="#7fcdbb" data-idx="15"></stop>
-  <stop offset="1" stop-color="#c7e9b4" data-idx="16"></stop>
-</linearGradient><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-5" data-idx="17">
-  <stop offset="0" stop-color="#c7e9b4" data-idx="18"></stop>
-  <stop offset="1" stop-color="#f3f8cf" data-idx="19"></stop>
-</linearGradient><linearGradient y2="1" y1="0" x2="0" x1="0" id="lg-nq4q5u6dq7r-6" data-idx="20">
-  <stop offset="0" stop-color="#f3f8cf" data-idx="21"></stop>
-  <stop offset="1" stop-color="#081c54" data-idx="22"></stop>
-</linearGradient><path fill-opacity="0.88" fill="url(#lg-nq4q5u6dq7r-0)" d="M 0 0 L 0 939.136 Q 192 1014.53 384 976.259 T 768 778.99 T 1152 808.841 T 1536 759.998 T 1920 587.938 L 1920 0 Z" data-idx="23">
-  
-</path><path fill-opacity="0.88" fill="url(#lg-nq4q5u6dq7r-1)" d="M 0 0 L 0 735.15 Q 192 755.986 384 731.275 T 768 762.79 T 1152 699.756 T 1536 558.789 T 1920 606.603 L 1920 0 Z" data-idx="25">
-  
-</path><path fill-opacity="0.88" fill="url(#lg-nq4q5u6dq7r-2)" d="M 0 0 L 0 695.567 Q 192 647.798 384 616.461 T 768 533.714 T 1152 617.685 T 1536 459.997 T 1920 441.188 L 1920 0 Z" data-idx="27">
-  
-</path><path fill-opacity="0.88" fill="url(#lg-nq4q5u6dq7r-3)" d="M 0 0 L 0 535.266 Q 192 532.448 384 487.384 T 768 430.447 T 1152 493.915 T 1536 384.382 T 1920 332.813 L 1920 0 Z" data-idx="29">
-  
-</path><path fill-opacity="0.88" fill="url(#lg-nq4q5u6dq7r-4)" d="M 0 0 L 0 380.149 Q 192 367.246 384 335.789 T 768 291.729 T 1152 298.864 T 1536 294.161 T 1920 342.035 L 1920 0 Z" data-idx="31">
-  
-</path><path fill-opacity="0.88" fill="url(#lg-nq4q5u6dq7r-5)" d="M 0 0 L 0 115.771 Q 192 130.86 384 109.487 T 768 136.805 T 1152 196.375 T 1536 116.973 T 1920 148.256 L 1920 0 Z" data-idx="33">
-  
-</path><g data-idx="35"></g></g></svg>
+            <SectionTilte titleText="Eventos" />
+
+            <article className=' md:mx-10   lg:mx-80   md:block lg:flex max-w-screen lg:max-w-6xl  p-0mt-10 mb-10 bg-sky-500/55 rounded-4xl overflow-clip '>
+              <img className='h-112 w-240 ' src={imgSrc} alt="Carnaval de Lisboa" />
+                
+               <div className='p-7'>  
+                <h2 className='text-3xl text-bold z-10 '>Carnaval de Lisboa</h2>
+                <p className='font-(family-name:--font1family) text-1xl z-10 text-justify  text-2xl'>O Cortejo Sardélico já faz parte do calendário cultural de Lisboa,
+                 trazendo irreverência, ritmo e muita animação para o carnaval lisboeta. 
+                 Com performances vibrantes e envolventes, a Sardinhas Nômades transforma 
+                 as ruas em um verdadeiro espetáculo de música e alegria, contagiando a todos com
+                  a essência do carnaval brasileiro. Venha viver essa experiência única conosco! 
+                </p>
+                </div>
+            </article>
+
+            <article  className='md:mx-10 lg:mx-80  md:block lg:flex  max-w-screen  lg:max-w-6xl  p-0 mt-10 mb-10 bg-sky-500/55 rounded-4xl overflow-clip '>
+
+               <div className='text-right p-7'>
+                  <h2 className='text-3xl text-bold z-10 '>Galas e Festas</h2>
+              <p className='font-(family-name:--font1family) text-justify text-2xl'>  A Sardinhas Nômades brilha nas galas e eventos
+                 mais prestigiados, levando nosso som contagiante e performances
+                  inesquecíveis para cada ocasião. Com uma mistura única de ritmos
+                   e uma presença de palco inigualável, garantimos que cada festa se torne
+                    uma celebração memorável. Junte-se a nós e sinta a energia vibrante que 
+                    só a nossa fanfarra pode proporcionar! </p>
+                
+                </div> 
+                      <img className='h-112 w-240 ' src={imgSrc2} alt="Carnaval de Lisboa" />
+            </article>
 
 
-            <h1 style={styles.title}>My App Events text! hello world !</h1>
         </section>
     );
 };
-
-const styles = {
-    header: {
-        backgroundColor: 'transparent',
-        textAlign: 'center' as const,
-    },
-    title: {
-        color: 'tomato',
-        fontSize: '24px',
-        margin: 0,
-    },
-};
-
+ 
 export default Events;
