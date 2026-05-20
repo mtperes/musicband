@@ -1,9 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Barrio&family=Limelight&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Chewy&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Barrio&family=Limelight&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Electrolize&family=Funnel+Display:wght@300..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-display: "Cubano", sans-serif; 
+  
+  --radius-5xl: 6rem; 
+
 }
 @font-face {
   font-family: 'Cubano';
@@ -20,9 +23,6 @@
 
 } 
 
-
-
-
 @keyframes roll{
   from {
     transform: translate(100%);
@@ -34,7 +34,7 @@
 :root {
 
   --font0family: 'Cubano', sans-serif;
-  --font1family: 'Chewy', sans-serif;
+  --font1family: 'Rubik', sans-serif;
   --primary-color: #155dfc;
 }
 
@@ -44,12 +44,12 @@
     width: "100%";
     height: "100vh";
    
-   
+  
 }
 
 * {
   box-sizing: border-box;
-  overflow: hidden;
+ 
   
 }
 #root {
@@ -72,12 +72,16 @@
   top:14vh;
   display: grid;
 }
+section{
+  margin-bottom: 6rem;
+}
+
 article {
   font-size: 1.3rem;
   line-height: 1.5;
   letter-spacing: 0.17rem;
   text-align: justify;
-  font-family: "Chewy", sans-serif;
+  font-family: "Rubik", sans-serif;
 }
 li {
   list-style: none;
@@ -89,7 +93,7 @@ button{
   font-size: 2rem;
   border: none;
   background: transparent;
- 
+  
   font-family: "Cubano";
 }
 h1 {
@@ -103,6 +107,30 @@ h2 {
   font-size: 3rem;
   margin-bottom: 0.2em;
 }
+p{
+  font-family: "Rubik", sans-serif;
+  
+}
+
+#holoCanvas {
+    background-color: #fff; /* Matches body fallback color if JS fails */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+} 
+.content-wrapper {
+    position: relative; 
+    z-index: 10; /* Ensures content sits *above* the background effect */
+    padding: 50px;
+}
+.video-bg{
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-image: url('../public/w-bg.mp4');
+}
+
 
 /* For screens up to 767px wide */
 @media (max-width: 767px) {
@@ -115,7 +143,7 @@ h2 {
 
   }
 
- h1{
+ h1,h2{
   font-size: 2rem;
  }
 
@@ -134,13 +162,15 @@ article {
   line-height: 1.5;
   letter-spacing: 0.17rem;
   text-align: justify;
-  font-family: "Chewy", sans-serif;
+  font-family: "Rubik", sans-serif;
   
 }
+p{
+   font-size: .9rem;
+};
 section{
-  padding-top: 6rem;
+  padding-top: 4rem;
 }
-  /* You might need to adjust other elements that rely on the logo's fixed position */
 }
 
 /* For screens between 768px and 1023px wide */

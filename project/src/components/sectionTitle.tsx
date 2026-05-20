@@ -9,12 +9,12 @@ const SectionTitle: React.FC<{ titleText: string }> = ({ titleText }) => {
       <h1 className="flex justify-center text-(--primary-color)">
         {' '}
         <img
-          className="h-12 w-12 mt-3 "
+          className="h-10 w-10 lg:h-12 lg:w-12 mt-3 "
           src={imgSrc}
           alt="head"
         />{' '}
             {titleText}{' '}
-        <img className="h-12 w-12 mt-3" src={imgSrc2} alt="tail" />{' '}
+        <img className="h-10 w-10 lg:h-12 lg:w-12 mt-3" src={imgSrc2} alt="tail" />{' '}
       </h1>
     </>
   );
