@@ -8,17 +8,19 @@ import Events from './components/Events'
 import Bio from './components/Bio'
 import Contact from './components/Contact'
 import SocialCarousel from './components/SocialCarousel'
-// import videoSrc from './assets/w-bg.mp4';
+ import videoSrc from './assets/w-bg.mp4';
 import Logo from './components/Logo'
-import VideoBackground from './components/VideoBrackground';
+import Footer from './components/Footer';
+
 
 function App() {
-
+const vidRef = useRef<HTMLVideoElement | null>(null);
+   if (vidRef.current) {
+      vidRef.current.playbackRate = 0.4;
+    }
   return (
     <>
-     {/* <video id="bgVideo" ref={vidRef} style={styles.bgVideo} src={videoSrc}   autoPlay muted loop ></video>  */}
-      <VideoBackground/>
-       
+     <video id="bgVideo" ref={vidRef} style={styles.bgVideo} src={videoSrc}   autoPlay muted loop ></video>  
          <Logo/> 
          <Banner/>
          <Menu/>
@@ -27,6 +29,7 @@ function App() {
          <SocialCarousel/>
          <Events/>
          <Contact/> 
+         <Footer/> 
         
   
        

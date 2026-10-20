@@ -539,6 +539,8 @@ CREATE TABLE sessions (
 - [ ] Implement ShareLink generator with expiry
 - [ ] Design clean minimalist UI styling
 - [ ] Add expense category breakdown chart
+- [ ] Add Inventory category to manage band fisical patrimony 
+
 
 #### Phase 4: Videos Page Development
 - [ ] Create VideoGallery grid component
@@ -601,7 +603,8 @@ project/
 │   │   │   ├── Dashboard.tsx
 │   │   │   ├── TransactionList.tsx
 │   │   │   ├── AddTransactionForm.tsx
-│   │   │   └── MonthlySummary.tsx
+│   │   │   ├── MonthlySummary.tsx
+│   │   │   └── Inventory.stx 
 │   │   └── videos/
 │   │       ├── VideoGallery.tsx
 │   │       ├── VideoPlayer.tsx

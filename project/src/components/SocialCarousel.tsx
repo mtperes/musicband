@@ -12,6 +12,7 @@ const SocialCarousel: React.FC = () => {
     '/gallery/photo3.jpg',
     '/gallery/photo4.jpg',
     '/gallery/photo5.jpg',
+    '/gallery/photo1.jpg',
     '/gallery/photo6.jpg',
     '/gallery/photo2.jpg',
     '/gallery/photo3.jpg',
@@ -38,7 +39,7 @@ const SocialCarousel: React.FC = () => {
         pagination={{
           clickable: true,
         }}
-          breakpoints={{768: {slidesPerView: 2,spaceBetween: 0 ,autoplay:{ delay: 0} },1024: {slidesPerView: 2,spaceBetween: 0 ,autoplay:{ delay: 0}}}}
+          breakpoints={{768: {slidesPerView: 2,spaceBetween: 0 ,autoplay:{ delay: 0} },1024: {slidesPerView: 4,spaceBetween: 0 ,autoplay:{ delay: 0} }}}
       
         className=" h-[90vh] w-full justify-center items-center overflow-visible"
 
@@ -46,7 +47,7 @@ const SocialCarousel: React.FC = () => {
       >
         {posts.map((post, index) => (
           <SwiperSlide  key={`${post}-${index}`}
-           style={{ backgroundImage: `url(${post})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+           style={{ backgroundImage: `url(${post})`, backgroundSize: 'cover', backgroundPosition: 'center top', backgroundRepeat: 'no-repeat'  }}
           >
             
       

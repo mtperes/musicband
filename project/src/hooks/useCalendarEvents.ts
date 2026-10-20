@@ -15,8 +15,14 @@ interface UseCalendarEventsResult {
   error: string | null;
 }
 
-const CALENDAR_ID = '1aa1550534d11c7cdfa85fbcbf1b0852806cdac52efb8e540d22ffdfbb3d6ea5@group.calendar.google.com';
-const CALENDAR_FEED = `/calendar/ical/${CALENDAR_ID}/public/basic.ics`;
+const MAX_EVENTS = 5;
+
+function getFeedUrl(): string {
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_USE_MOCK_CALENDAR === '1') {
+    return '/mock-calendar.ics';
+  }
+  return '/api/calendar';
+}
 
 export function useCalendarEvents(): UseCalendarEventsResult {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -28,17 +34,26 @@ export function useCalendarEvents(): UseCalendarEventsResult {
 
     const fetchEvents = async () => {
       try {
-        const response = await fetch(CALENDAR_FEED);
-        
+        const response = await fetch(getFeedUrl(), {
+          method: 'GET',
+          headers: { Accept: 'text/calendar' },
+        });
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const icsText = await response.text();
-        const parsedEvents = parseICS(icsText);
-        
+        const parsed = parseICS(icsText);
+
+        const now = new Date();
+        const upcoming = parsed
+          .filter((event) => event.startDate.getTime() >= now.getTime())
+          .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+          .slice(0, MAX_EVENTS);
+
         if (isMounted) {
-          setEvents(parsedEvents);
+          setEvents(upcoming);
           setIsLoading(false);
         }
       } catch (err) {
@@ -60,89 +75,111 @@ export function useCalendarEvents(): UseCalendarEventsResult {
   return { events, isLoading, error };
 }
 
+function unfoldICS(icsText: string): string {
+  return icsText
+    .replace(/\r\n[ \t]/g, '')
+    .replace(/\n[ \t]/g, '')
+    .replace(/\r[ \t]/g, '');
+}
+
+function unescapeICS(value: string): string {
+  return value
+    .replace(/\\n/gi, '\n')
+    .replace(/\\,/g, ',')
+    .replace(/\\;/g, ';')
+    .replace(/\\\\/g, '\\');
+}
+
 function parseICS(icsText: string): CalendarEvent[] {
   const events: CalendarEvent[] = [];
-  let currentEvent: Partial<CalendarEvent> & { _dtstart?: string; _dtend?: string; _uid?: string } = {};
+  const unfolded = unfoldICS(icsText);
+  const lines = unfolded.split(/\r?\n/);
+
+  type Raw = Partial<CalendarEvent> & { _dtstart?: string; _dtend?: string; _uid?: string };
+  let current: Raw = {};
   let inVEVENT = false;
 
-  const lines = icsText.split('\n');
+  for (const rawLine of lines) {
+    const line = rawLine.trimEnd();
+    if (!line) continue;
 
-  for (const line of lines) {
     if (line === 'BEGIN:VEVENT') {
       inVEVENT = true;
-      currentEvent = {
-        title: '',
-        description: '',
-        startDate: new Date(),
-        endDate: null,
-      };
-    } else if (line === 'END:VEVENT') {
-      if (inVEVENT && currentEvent.title) {
-        const start = parseDateTime(currentEvent._dtstart as string);
-        const end = currentEvent._dtend ? parseDateTime(currentEvent._dtend as string) : null;
-
+      current = {};
+      continue;
+    }
+    if (line === 'END:VEVENT') {
+      if (inVEVENT && current._dtstart) {
+        const start = parseDateTime(current._dtstart);
+        const end = current._dtend ? parseDateTime(current._dtend) : null;
         events.push({
-          id: currentEvent._uid as string || '',
-          title: currentEvent.title || 'Sem título',
-          description: currentEvent.description,
+          id: current._uid ?? `${start.toISOString()}-${current.title ?? ''}`,
+          title: current.title ?? 'Sem título',
+          description: current.description,
           startDate: start,
           endDate: end,
-          location: currentEvent.location,
+          location: current.location,
         });
       }
       inVEVENT = false;
-      currentEvent = {};
-    } else if (inVEVENT) {
-      const [key, ...valueParts] = line.split(':');
-      const value = valueParts.join(':');
+      current = {};
+      continue;
+    }
 
-      switch (key) {
-        case 'SUMMARY':
-          currentEvent.title = decodeURIComponent(value);
-          break;
-        case 'DESCRIPTION':
-          currentEvent.description = decodeURIComponent(value);
-          break;
-        case 'DTSTART':
-          currentEvent._dtstart = value;
-          break;
-        case 'DTEND':
-          currentEvent._dtend = value;
-          break;
-        case 'UID':
-          currentEvent._uid = value;
-          break;
-        case 'LOCATION':
-          currentEvent.location = decodeURIComponent(value);
-          break;
-      }
+    if (!inVEVENT) continue;
+
+    const colonIdx = line.indexOf(':');
+    if (colonIdx === -1) continue;
+    const prop = line.slice(0, colonIdx);
+    const value = line.slice(colonIdx + 1);
+    const name = prop.split(';')[0].toUpperCase();
+
+    switch (name) {
+      case 'SUMMARY':
+        current.title = unescapeICS(value);
+        break;
+      case 'DESCRIPTION':
+        current.description = unescapeICS(value);
+        break;
+      case 'LOCATION':
+        current.location = unescapeICS(value);
+        break;
+      case 'DTSTART':
+        current._dtstart = value;
+        break;
+      case 'DTEND':
+        current._dtend = value;
+        break;
+      case 'UID':
+        current._uid = value;
+        break;
     }
   }
 
   return events;
 }
 
-function parseDateTime(dateString: string): Date {
-  const dt = dateString.replace('T', ' ').replace('Z', '');
-  
-  let [datePart, timePart] = dt.split(' ');
-  
-  if (!timePart) {
-    const date = new Date(datePart);
-    return date;
+function parseDateTime(raw: string): Date {
+  const value = raw.trim();
+
+  const dateOnly = /^(\d{4})(\d{2})(\d{2})$/;
+  const dateTimeUtc = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/;
+  const dateTimeLocal = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/;
+
+  let m = dateTimeUtc.exec(value);
+  if (m) {
+    return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]));
   }
 
-  const [year, month, day] = datePart.split('-').map(Number);
-  const [hour, minute] = timePart.split(':').map(Number);
-
-  const date = new Date(year, month - 1, day, hour, minute);
-  
-  const now = new Date();
-  if (date > now) {
-    return date;
-  } else {
-    const futureDate = new Date(year, month - 1, day, hour, minute);
-    futureDate.setFullYear(now.getFullYear());
-    return futureDate;
+  m = dateTimeLocal.exec(value);
+  if (m) {
+    return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
   }
+
+  m = dateOnly.exec(value);
+  if (m) {
+    return new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0);
+  }
+
+  return new Date(value);
 }
