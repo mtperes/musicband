@@ -31,10 +31,9 @@ const Logo: React.FC = () => {
   });
  
  
-  
-  const scaleLogo = useTransform(scrollYProgress, [0, 1], isMobile ? [50, 1] : [60, 1]);
-  const y = useTransform(scrollYProgress, [0, 0.2, 1], isMobile ? ['660%', '2500%', '60%'] : ['2000%', '2500%', '10%']);
-  const x = useTransform(scrollYProgress, [0, 0.2, 1], isMobile ? ['660%', '1950%', '15%'] : ['4000%','9300%', '14%']);
+  const scaleLogo = useTransform(scrollYProgress, [0, 1], isMobile ? [50, 1] : [40, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.2, 1], isMobile ? ['660%', '2500%', '60%'] : ['2000%', '2200%', '10%']);
+  const x = useTransform(scrollYProgress, [0, 0.2, 1], isMobile ? ['660%', '1800%', '15%'] : ['4000%','4300%', '14%']);
   const opacity = useTransform(scrollYProgress, [0, 0.8, 1], isMobile ? [0 ,0.0001, 1] : [0 ,0.0001, 1]);
   // const opacitybg = useTransform(scrollYProgress, [0, 0.2, 1], [0 ,0.5, 1]);
   const rotateLogo = useTransform(scrollYProgress, [0, 0.7, 1], isMobile ? ["95deg", "125deg" , "-20deg"] : ["95deg", "85deg" , "0deg"]);
