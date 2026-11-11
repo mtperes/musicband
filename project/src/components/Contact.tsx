@@ -27,7 +27,7 @@ const Contact: React.FC = () => {
                     <label className='ml-2' htmlFor="message">Mensagem</label>
                     <textarea className='mt-3 mb-7 min-h-[12rem] w-full rounded-2xl border-2 border-white/50 p-3 text-base' name="message" id="message" autoComplete="off" placeholder="Escreva aqui sua mensagem para o cardume!" required></textarea>
                     
-                    <button className='min-h-11 w-full rounded-4xl border-2 border-white/50 p-3 px-6 font-bold text-white transition-colors hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-60' type="submit">Enviar</button>
+                    <button className='min-h-11 w-full rounded-4xl border-2 border-white/50 p-3 px-6 font-bold text-white transition-colors hover:bg-yellow-500 disabled:cursor-not-allowed disabled:opacity-60 text-3xl' type="submit">Enviar</button>
                     </fieldset>
                 </form>
 

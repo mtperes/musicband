@@ -25,7 +25,7 @@ const SocialCarousel: React.FC = () => {
 
   return (
     <section className="h-screen mb-5 justify-center items-center overflow-x-clip" id="socials" aria-labelledby="socials-heading">
-      <SectionTitle titleText="Galeria de fotos" id="socials-heading" />
+      <SectionTitle titleText="Fotos" id="socials-heading" />
       <div role="region" aria-label="Fotos da banda" className="flex justify-center overflow-x-clip">
       <Swiper
         modules={[Keyboard, Parallax, Navigation, Pagination, Autoplay]}
@@ -54,6 +54,13 @@ const SocialCarousel: React.FC = () => {
           </SwiperSlide>
         ))}
       </Swiper>
+      </div>
+      
+      <div className="flex flex-row justify-around items-center mt-[-15vh] position-static relative z-10 w-full">
+   
+        <a href="https://www.instagram.com/sardinhas.nomades/" target="_blank" rel="noopener noreferrer">
+          <button className="mt-2 px-6 py-2 text-white border border-white/20 rounded-4xl bg-gradient-to-br from-white/25 via-white/10 to-white/5 backdrop-blur-md shadow-lg shadow-black/20 hover:from-white/35 hover:to-white/10 transition-colors text-[35px]">Instagram @sardinhas.nomades</button>
+        </a>
       </div>
     </section>
   );

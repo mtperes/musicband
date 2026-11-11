@@ -108,7 +108,7 @@ li {
 }
 button{
   text-align: center;
-  font-size: 2rem;
+  /* font-size: 1.5rem; */
   background: transparent;
   
   font-family: "Cubano";

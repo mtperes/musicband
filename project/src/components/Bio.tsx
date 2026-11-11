@@ -12,7 +12,7 @@ const Bio: React.FC = () => {
       <SectionTilte titleText="O Cardume" id="bio-heading" />
       <BandCarousel />
 
-      <article className="relative z-10 -mt-20 rounded-4xl bg-sky-500/20 p-4 text-justify sm:p-5 md:-mt-32 md:p-8 lg:mx-70 lg:-mt-40 lg:p-10 font-(family-name:--font1family)">
+      <article className="relative z-10 -mt-20 rounded-4xl bg-sky-500/20 p-4 text-justify m-auto max-w-screen-2xl sm:p-5 md:-mt-32 lg:-mt-40 lg:p-10 font-(family-name:--font1family)">
         <video
           className="video-bg "
           style={styles.bgVideo}
