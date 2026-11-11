@@ -1,24 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import videoSrc from "../assets/banner-video.mov";
-import mobileVideoSrc from "../assets/w-bg.mp4";
+import videoSrc from "../assets/w-bg.mp4";
 
 
 const Banner: React.FC = () => {
   const prefersReducedMotion = useReducedMotion() ?? false;
-  const [isNarrowViewport, setIsNarrowViewport] = useState(() =>
-    window.matchMedia("(max-width: 767px)").matches,
-  );
   const videoRef = useRef<HTMLVideoElement>(null);
-  const activeVideoSrc = isNarrowViewport ? mobileVideoSrc : videoSrc;
-
-  useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 767px)");
-    const updateViewport = () => setIsNarrowViewport(mobileQuery.matches);
-    mobileQuery.addEventListener("change", updateViewport);
-    return () => mobileQuery.removeEventListener("change", updateViewport);
-  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -31,7 +19,7 @@ const Banner: React.FC = () => {
     playBanner();
     document.addEventListener("visibilitychange", playBanner);
     return () => document.removeEventListener("visibilitychange", playBanner);
-  }, [activeVideoSrc]);
+  }, []);
 
   const targetRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -59,10 +47,9 @@ const Banner: React.FC = () => {
           ref={targetRef}
         >
           <video
-            key={activeVideoSrc}
             ref={videoRef}
             className="banner-video h-full w-full object-cover"
-            src={activeVideoSrc}
+            src={videoSrc}
             poster="/events/events1.jpg"
             autoPlay
             loop
