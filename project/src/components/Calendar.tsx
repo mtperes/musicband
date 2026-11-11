@@ -1,40 +1,47 @@
-import React, { useRef } from "react";
+import React from "react";
 import "../index.css";
 import SectionTitle from "./sectionTitle";
 import { TextFade } from "../effects/TextFade";
 import { useCalendarEvents } from "../hooks/useCalendarEvents";
-import videoSrc from "/public/w-bg.mp4";
+import { useReducedMotion } from "framer-motion";
+import videoSrc from "/w-bg.mp4";
 
 const TIMEZONE = "Europe/Lisbon";
 
 const Calendar: React.FC = () => {
-  const { events, isLoading, error } = useCalendarEvents();
-  const vidRef = useRef<HTMLVideoElement | null>(null);
-  if (vidRef.current) {
-    vidRef.current.playbackRate = 1;
-  }
-
-  if (isLoading || error) {
-    return <section id="calendar" />;
-  }
+  const { events, isLoading, error, retry } = useCalendarEvents();
+  const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
-    <section id="calendar">
-      <SectionTitle titleText="Agenda" />
+    <section id="calendar" aria-labelledby="calendar-heading" className="px-3 sm:px-5 md:px-8">
+      <SectionTitle titleText="Agenda" id="calendar-heading" />
 
       <article className="md:mt-40 lg:mx-70 mt-10 z-10 p-4 lg:p-10 relative bg-sky-500/20 rounded-4xl font-(family-name:--font1family) text-justify">
         <video
           className="video-bg"
           style={styles.bgVideo}
-          id="bgVideo"
-          ref={vidRef}
           src={videoSrc}
-          autoPlay
+          autoPlay={!prefersReducedMotion}
           muted
-          loop
+          loop={!prefersReducedMotion}
+          playsInline
+          preload={prefersReducedMotion ? "none" : "metadata"}
+          aria-hidden="true"
+          tabIndex={-1}
         ></video>
 
-        {events.length === 0 ? (
+        {isLoading ? (
+          <TextFade direction="up">
+            <p className="mb-10" role="status" aria-live="polite">Carregando agenda...</p>
+          </TextFade>
+        ) : error ? (
+          <div className="mb-10" role="alert">
+            <p className="mb-4">Não foi possível carregar a agenda.</p>
+            <button className="min-h-11 rounded-xl border border-white/50 px-4 py-2 text-base" type="button" onClick={retry}>
+              Tentar novamente
+            </button>
+          </div>
+        ) : events.length === 0 ? (
           <TextFade direction="up">
             <p className="mb-10">Nenhum evento agendado.</p>
           </TextFade>
@@ -46,8 +53,8 @@ const Calendar: React.FC = () => {
                 event.startDate.toDateString() === event.endDate.toDateString();
 
               return (
-                <div key={event.id} className="mb-10  last:mb-0 border-b border-gray-300 pb-10">
-                  <h2 className="mb-3">{event.title}</h2>
+                <div key={event.id} className="mb-6 border-b border-gray-300 pb-6 last:mb-0 sm:mb-8 sm:pb-8">
+                  <h3 className="mb-3">{event.title}</h3>
 
                   <p className="mb-3">
                     {event.startDate.toLocaleString("pt-BR", {
@@ -85,7 +92,7 @@ const Calendar: React.FC = () => {
                     </p>
                   )}
 
-                  {event.location && <p className="mb-3">📍 {event.location}</p>}
+                  {event.location && <p className="mb-3">Local: {event.location}</p>}
 
                   {event.description && (
                     <div

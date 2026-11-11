@@ -1,650 +1,228 @@
-﻿# Responsive Development Plan - Music Band Website
-
-## Overview
-This document outlines all necessary changes to make the music band website fully responsive across mobile (≤640px), tablet (641-1024px), and desktop (>1024px) devices using Tailwind CSS breakpoints.
-
----
-
-## Files Requiring Changes
-
-### 1. project/src/index.css
-**Priority:** High  
-**Purpose:** Global responsive typography and base styles
-
-#### Tasks:
-- [ ] Add responsive font imports for Barrio and Limelight fonts
-- [ ] Replace hardcoded font sizes with Tailwind responsive classes (text-4xl md:text-5xl lg:text-6xl)
-- [ ] Add global max-w-full to all image elements in CSS
-- [ ] Update background gradient for mobile optimization
-- [ ] Add responsive line-height and letter-spacing utilities
-
----OK
-
-### 2. project/src/App.css
-**Priority:** High  
-**Purpose:** Main responsive stylesheet with breakpoint media queries
-
-#### Tasks:
-- [ ] Convert existing @media (max-width: 767px) to Tailwind sm: breakpoint (≥640px)
-- [ ] Convert @media (min-width: 768px) and (max-width: 1023px) to Tailwind md: breakpoint (≥768px)
-- [ ] Convert @media (min-width: 1024px) to Tailwind lg: breakpoint (≥1024px)
-- [ ] Remove hardcoded pixel values, replace with Tailwind classes
-- [ ] Add responsive sizing for .logo component:
-  - Mobile: w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24
-  - Transition: transition-all duration-300
-- [ ] Update h1 and h2 typography:
-  - Mobile: text-3xl md:text-4xl lg:text-5xl
-  - Tablet: text-4xl md:text-5xl lg:text-6xl
-  - Desktop: text-5xl md:text-6xl lg:text-7xl
-- [ ] Add responsive padding to sections: p-3 sm:p-5 md:p-8 lg:p-12
-- [ ] Make .menu grid responsive:
-  - Mobile: flex-col (stacked)
-  - Tablet/Desktop: grid grid-cols-2 gap-4
-- [ ] Add responsive font sizes for article:
-  - Mobile: text-sm sm:text-base md:text-lg lg:text-xl
-- [ ] Update button responsive sizing:
-  - Mobile: text-xs sm:text-sm md:text-base
-  - Tablet/Desktop: text-base lg:text-xl
-
----
-
-### 3. project/src/components/Banner.tsx
-**Priority:** High  
-**Purpose:** Hero section with background video
-
-#### Tasks:
-- [ ] Replace h-screen with responsive height: className="relative h-dvh sm:h-screen"
-- [ ] Add responsive background blur to motion.div: filter: blur(10px sm:25px lg:45px)
-- [ ] Make video scale transform responsive: scale-[1.2] sm:scale-150
-- [ ] Add max-w-full to background image element
-- [ ] Adjust scroll transforms for mobile viewport
-
----
-
-### 4. project/src/components/Menu.tsx
-**Priority:** High  
-**Purpose:** Navigation menu with hover effects
-
-#### Tasks:
-- [ ] Convert .menu grid to responsive layout: className="menu flex-col sm:flex-row gap-2 p-3 sm:p-6"
-- [ ] Add responsive button sizing: text-xs sm:text-sm md:text-base
-- [ ] Adjust hover transform scale for mobile: whileHover={{ scale: 1.05 sm:1.19, x: 5 sm:20 }}
-- [ ] Make menu position responsive: Mobile left: 1rem top: 8vh, Desktop left: 0rem top: 6vh
-- [ ] Add max-width to prevent overflow on small screens
-
----
-
-### 5. project/src/components/Bio.tsx
-**Priority:** High  
-**Purpose:** About section with title and text
-
-#### Tasks:
-- [ ] Replace hardcoded fontSize: '74px' with Tailwind clamp(2rem, 5vw, 4rem)
-- [ ] Add responsive padding to article: p-3 sm:p-5 md:p-8 lg:p-10 mx-2 sm:mx-0
-- [ ] Make image responsive: style={{ width: '100%', height: 'auto', maxHeight: '40vh' }}
-- [ ] Add responsive line-height and max-width to text
-- [ ] Adjust fade gradients for mobile viewport
-
----
-
-### 6. project/src/components/Calendar.tsx
-**Priority:** Medium  
-**Purpose:** Event calendar/events list
-
-#### Tasks:
-- [ ] Add responsive container padding: bg-white rounded-lg shadow-md p-3 sm:p-5 md:p-8
-- [ ] Make event cards responsive width: Mobile w-full, Tablet/Desktop max-w-2xl mx-auto
-- [ ] Adjust text sizes for mobile readability: text-xs sm:text-sm md:text-base
-- [ ] Add responsive spacing between events: space-y-3 sm:space-y-4
-
----
-
-### 7. project/src/components/Events.tsx
-**Priority:** High  
-**Purpose:** Events gallery with images and descriptions
+# Collective Development Plan
 
-#### Tasks:
-- [ ] Remove hardcoded widths w-240 h-112 completely
-- [ ] Convert to responsive grid layout: grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-8
-- [ ] Make images fully responsive: className='w-full h-auto max-h-[40vh] sm:max-h-[50vh] lg:max-h-[60vh]'
-- [ ] Add responsive text sizes: Mobile text-xl sm:text-2xl, Tablet/Desktop text-3xl md:text-4xl lg:text-5xl
-- [ ] Adjust container margins: mx-2 sm:mx-6 lg:mx-10
-- [ ] Make flex layouts responsive: Mobile flex-col, Tablet/Desktop flex-row-reverse lg:flex-row
+## Product Objective
 
----
+Collective is a customizable, responsive online self-management platform for independent artists and bands. Its defining value is bringing a band's public website together with the private tools its members use to run their work. Sardinhas Nômades is the first band using the platform and the reference instance for product decisions; the data model and content tools should support additional bands without copying the application.
 
-### 8. project/src/components/SocialCarousel.tsx
-**Priority:** High  
-**Purpose:** Instagram social media carousel
+The product has two connected areas:
 
-#### Tasks:
-- [ ] Make slidesPerView responsive in Swiper config:
-  - initialSlideToView: 1 (Mobile)
-  - breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
-- [ ] Add responsive container height: h-dvh sm:h-[80vh] md:h-screen
-- [ ] Adjust spacing between slides for mobile: spaceBetween={15 sm:20}
+- **Public presence:** a band's website with its profile, media, events, calendar, and contact information.
+- **Private workspace:** authenticated tools for band members to manage content, setlists and music sheets, finances, and shared band resources.
 
----
+The first release should make the public site manageable and deliver the member workflows with the highest day-to-day value. Fan-following/community features, payments, a store, and event notifications are later extensions, not prerequisites for that release.
 
-### 9. project/src/components/Contact.tsx
-**Priority:** High  
-**Purpose:** Contact form section
+## Current State
 
-#### Tasks:
-- [ ] Replace h-screen with responsive height: className='h-dvh sm:h-[85vh] md:h-screen'
-- [ ] Make form container responsive width: Mobile w-full, Tablet/Desktop max-w-2xl
-- [ ] Adjust input/textarea sizing: Mobile w-full text-sm, Tablet/Desktop w-auto md:w-[90%] lg:w-[45%]
-- [ ] Add responsive padding to section: p-3 sm:p-6 md:p-8 rounded-[2rem] sm:rounded-[30px]
-- [ ] Make form labels and inputs mobile-friendly (larger touch targets)
-- [ ] Adjust text sizes for mobile readability
+Verified in the repository as of November 10, 2026:
 
----
+- React 19, TypeScript, Vite, and Tailwind CSS 4 are in use.
+- The public single-page site has a hero, band bio and photo carousel, calendar, event descriptions, image carousel, contact form UI, and footer.
+- The navigation has a desktop menu and a mobile dropdown.
+- Calendar events are loaded from an ICS feed through `useCalendarEvents`; mock calendar mode is available.
+- Basic responsive styles, responsive navigation behavior, font imports, and a global image max-width rule exist.
 
-### 10. project/src/components/Logo.tsx
-**Priority:** High  
-**Purpose:** Animated logo component
+The photo carousel is the public image gallery. A separate Videos page/section for YouTube embeds is planned; it is not a replacement for the photo gallery, and no dedicated Videos experience is present in the current code. Other features not verified in the repository include a working contact-form submission workflow, CMS, authentication, private member space, persistent theme preferences, accounting, inventory, donations, store, fan accounts, or notifications. Treat these as planned work, not existing functionality.
 
-#### Tasks:
-- [ ] Convert JavaScript-based mobile detection to Tailwind utilities
-- [ ] Add responsive scale transforms with breakpoint-specific values
-- [ ] Make logo position responsive: Mobile top: '4vh', Desktop top: '0'
-- [ ] Adjust rotation values per breakpoint
-- [ ] Add max-w-full to prevent overflow
+## Scope and Decisions
 
----
+**First release:** a reusable public site, an admin-managed content workflow, secure member access, setlists and music-sheet viewing, and basic band finances and inventory. The public site and member workspace may share one application, but permissions and data boundaries must be enforced by the backend, not only by route visibility.
 
-### 11. project/src/components/sectionTitle.tsx
-**Priority:** Medium  
-**Purpose:** Section headers with decorative SVGs
+**Later release:** public video discovery, fan accounts and following, donations/store integrations, and opt-in event notifications. Google Meet/rehearsal integration is exploratory and should be prioritized only after the core workflows are in use.
 
-#### Tasks:
-- [ ] Make image sizes responsive: h-10 w-10 mt-2 sm:h-12 sm:w-12 md:h-14 md:w-14
-- [ ] Add responsive text size for title: text-xl sm:text-2xl md:text-3xl lg:text-4xl
+**Architecture guardrails:**
 
----
+- Keep React, TypeScript, Vite, and the existing design system unless a concrete requirement motivates a change.
+- Select one managed backend after comparing authentication, relational data, file storage, access policies, cost, and operational needs. Supabase is a reasonable first candidate; Firebase remains an alternative, not a parallel implementation.
+- Avoid introducing a client state library or custom API server before a specific workflow needs one.
+- Use backend-managed authentication and authorization. Do not implement a hand-rolled session-token table in the browser app.
+- Every band-owned record and uploaded file must be scoped to a band/workspace. Enforce that boundary in backend policies and verify it with cross-workspace access tests.
+- Keep payment card data with the payment provider; the application should store provider references and transaction status only.
 
-### 12. project/src/components/SocialPost.tsx
-**Priority:** Medium  
-**Purpose:** Individual Instagram post embeds
+## Roadmap
 
-#### Tasks:
-- [ ] Make container width fully responsive: style={{ width: min(28rem, 95vw), minWidth: 24rem }}
-- [ ] Add max-w-full to prevent overflow on small screens
+Task numbers are global and stable for progress tracking. A task is checked only when the behavior is implemented, not merely scaffolded. Phase completion requires its deliverable and acceptance checks, not just checked boxes.
 
----
+### Phase 0: Product and Technical Foundation
 
-### 13. project/src/App.tsx
-**Priority:** High  
-**Purpose:** Main app component with background video
+**Deliverable:** an agreed MVP, user roles, backend choice, and data/access model before protected data is introduced.
 
-#### Tasks:
-- [ ] Make background video responsive blur: Mobile blur(10px), Tablet blur(25px), Desktop blur(45px)
-- [ ] Add responsive video sizing: width: '100%', height: 'auto', maxHeight: '100vh'
-- [ ] Adjust opacity per breakpoint for readability
+- [x] 1. Confirm first-release users and workflows: public visitor, band owner/admin, musician, and finance manager; define which roles may view or change each resource.
+- [x] 2. Write acceptance criteria for public content management, setlists/sheets, accounting, and inventory; distinguish required release scope from later ideas.
+- [x] 3. Evaluate Supabase and Firebase against the data relationships, authentication, storage, access-control, backup, cost, and deployment needs; record one selected backend.
+- [x] 4. Define the workspace model: band identity, public slug, member roles, ownership/invitations, and how each record belongs to one band.
+- [x] 5. Document environment configuration, local development, mock data, and deployment assumptions without committing secrets.
 
----
-
-## Tailwind Breakpoint Reference
+#### Phase 0 Decisions
 
-| Class Prefix | Min Width | Use Case |
-|-------------|-----------|----------|
-| sm:         | ≥640px    | Small tablets / Large phones |
-| md:         | ≥768px    | Tablets |
-| lg:         | ≥1024px   | Desktops |
-| xl:         | ≥1280px   | Large desktops |
+**MVP users and permissions**
 
----
+| User | Access |
+|---|---|
+| Public visitor | Read published band profile, events, photo gallery, Videos page, and public contact links. No access to member data. |
+| Band owner/admin | Manage band settings, public content, members, roles, and all band workspace data. At least one owner must remain assigned. |
+| Musician | View band events and manage setlists, songs, and music sheets. No access to financial records unless separately granted. |
+| Finance manager | Manage transactions, inventory, and financial reports. May also hold another role. |
 
-## Image Scaling Best Practices
+Roles are independently assignable to a band membership, so a member may be both musician and finance manager. The owner/admin role grants workspace administration; public visitors do not need accounts for public content.
 
-All images must include these Tailwind classes:
-- max-w-full - Prevents overflow on small screens
-- h-auto - Maintains aspect ratio
-- Responsive width classes: w-64 sm:w-80 md:w-96 lg:w-[40rem]
+**First-release acceptance criteria**
 
----
+- An authorized editor can create and update a band's profile, events, photo gallery, and YouTube videos, preview changes, and publish them to that band's public site.
+- A public visitor can browse a band's published site without signing in. The photo carousel remains separate from the dedicated YouTube Videos experience.
+- Invited band members can sign in; workspace tools enforce the member's assigned roles.
+- Musicians can create and arrange setlists and open their associated music sheets in the viewer.
+- Authorized finance users can record transactions and inventory and produce a period summary using documented calculation rules.
+- Tests confirm that signed-out users, wrong-role members, and members of another band cannot read or change private records or files.
+- Public and private workflows pass the responsive, accessibility, and release-readiness gates defined below.
 
-## Typography Scaling Strategy
+Fan accounts/follows, public user-generated posts, donations, store/fulfillment, event notifications, and rehearsal meeting links are explicitly outside the first-release acceptance criteria.
 
-Use Tailwinds responsive text sizes:
-- Mobile-first approach: className="text-sm sm:text-base md:text-lg lg:text-xl"
-- Headers: h1 "text-3xl sm:text-4xl lg:text-5xl xl:text-6xl", h2 "text-2xl sm:text-3xl lg:text-4xl"
+**Backend decision: Supabase**
 
----
+Use Supabase as the initial managed backend. The platform's core records (bands, memberships, events, setlists, transactions, and inventory) are relational; PostgreSQL constraints and queries fit these relationships and reporting needs. Supabase also provides managed authentication, file storage, and row-level security in one service. Firebase was considered, but its document-oriented model is a less direct fit for relational reporting and cross-entity role/workspace rules. This is a product-fit decision, not approval of a production plan: confirm current pricing, region availability, backup/restore, quotas, and data-retention requirements before launch.
 
-## Mobile-First Priority List
+**Workspace and data boundary**
 
-### Critical (Must fix for mobile):
-1. Remove all hardcoded pixel values
-2. Add max-w-full to all images
-3. Make text sizes responsive
-4. Adjust form input sizes for touch targets
-5. Reduce background blur on mobile
+- A `band` is the tenant/workspace, with an internal ID and unique public slug.
+- A user may belong to multiple bands. Each membership is scoped to one band and can carry multiple roles; owners/admins manage membership and band settings.
+- Every band-owned row and private storage object is associated with that band's ID. Public queries expose only published public fields; private workspace data is never made public by route configuration alone.
+- Enforce membership and role checks in Supabase Row Level Security and storage policies. Include cross-band and wrong-role tests before adding real data.
+- Keep payment-provider details and secrets outside the app's public data model; no payment card data is stored in Collective.
 
-### Important (Tablet optimization):
-1. Convert grid layouts to responsive columns
-2. Adjust padding/margins per breakpoint
-3. Menu layout changes
+**Local development and environment assumptions**
 
-### Nice-to-have (Desktop polish):
-1. Enhanced typography sizes
-2. Expanded spacing
-3. Advanced visual effects
+- Existing commands: `npm run dev`, `npm run dev:mock`, `npm run build`, and `npm run lint`.
+- `.env.local` is ignored by the existing `*.local` rule; `token.env` is also ignored. No `.env.example` currently exists.
+- When the backend is introduced, add a placeholder-only `.env.example` and use `.env.local` for local values. Only intentionally public Supabase URL and publishable/anon key may use Vite's `VITE_` prefix; never put the Supabase service-role key or other secrets in frontend variables.
+- Use separate Supabase projects/configuration for development and production. Keep mock calendar mode independent from backend authentication/data and do not treat mock mode as a production fallback.
+- No backend project, credentials, migrations, or client SDK have been created as part of Phase 0.
 
----
+### Phase 1: Public Website and Responsive Baseline
 
-## Testing Checklist
-
-After implementing changes, test on:
-
-### Mobile Devices (≤640px)
-- [ ] iPhone SE (smallest screen)
-- [ ] iPhone 12/13/14
-- [ ] Android Pixel phones
-- [ ] Touch target sizes (min 44x44px)
-- [ ] Text readability at normal viewing distance
-
-### Tablet Devices (641-1024px)
-- [ ] iPad Mini
-- [ ] iPad Air
-- [ ] Samsung Galaxy Tab
-- [ ] Layout transitions between breakpoints
-
-### Desktop (>1024px)
-- [ ] 1366x768 (laptop)
-- [ ] 1920x1080 (standard desktop)
-- [ ] 2560x1440 (large monitor)
-- [ ] 3840x2160 (4K display)
-
----
-
-## Implementation Order
-
-### Phase 1: Global Styles (Day 1)
-1. Update index.css with responsive base styles
-2. Update App.css with breakpoint media queries
-3. Test global typography and spacing
-
-### Phase 2: Critical Components (Day 2)
-4. Banner - Video responsiveness
-5. Logo - Position and scale
-6. Menu - Layout changes
-7. Bio - Typography and image scaling
-8. Contact - Form sizing
-
-### Phase 3: Content Components (Day 3)
-9. Events - Grid layout
-10. Calendar - Responsive cards
-11. SocialCarousel - Swiper breakpoints
-12. SectionTitle - Image sizes
-
-### Phase 4: Polish & Testing (Day 4-5)
-13. Cross-device testing
-14. Performance optimization
-15. Accessibility audit
-16. Final refinements
-
----
-
-## Expected Results
-
-After implementation, the website will:
-
-Mobile (≤640px):
-- Fully readable text with appropriate sizing
-- Touch-friendly buttons and inputs
-- Stacked layouts for easy navigation
-- Optimized background effects
-
-Tablet (641-1024px):
-- Two-column grids where appropriate
-- Medium-sized typography
-- Balanced spacing and padding
-
-Desktop (>1024px):
-- Full-width layouts with flex/grid
-- Large, impactful typography
-- Enhanced visual effects
-- Multi-column content displays
-
----
-
-## Notes
-
-- All changes use Tailwind CSS utility classes for consistency
-- Mobile-first approach ensures mobile users get optimal experience first
-- Breakpoints align with industry standards (Tailwinds default)
-- Image scaling prevents layout breaking on any device
-- Typography scales smoothly across all viewport sizes
-
----
-
-## Band Management System Expansion
-
-This section extends the website into a full band management platform with three portals: Public Site (`/`), Musician Portal (`/band`), and Accounting Portal (`/accounting`).
-
-### Architecture Overview
-
-**Routing Structure:**
-- `/` - Public Website (current)
-- `/band` - Musician Portal (setlists, music tabs with instrument filters)
-- `/accounting` - Financial management with monthly expense sharing
-- `/videos` - YouTube embedded video gallery
-
-**Recommended Free Tech Stack:**
-- **Frontend**: React 19 + Vite (existing) + React Router DOM + Zustand
-- **PDF Viewer**: react-pdf (primary) or pdf.js (alternative)
-- **Backend**: Supabase (free tier, full-stack DB + auth) or Firebase (free tier, real-time)
-
-### Module 1: Musician Portal (`/band`)
-
-**Purpose:** Setlist management and interactive music tabs for live performances.
-
-**Features:**
-- Setlists grid/list view with add/edit/remove songs
-- Search and filter by genre/era
-- Interactive PDF tabs viewer with zoom controls (+/- buttons, keyboard shortcuts)
-- Fullscreen clean display mode with background blur option
-- Auto-scroll functionality when content exceeds viewport
-- Instrument filter dropdown (accordion, vocals, guitar, bass, drums, keys)
-
-**Data Structure:**
-```typescript
-interface Setlist {
-  id: string;
-  title: string;
-  date?: string;
-  venue?: string;
-}
-
-interface Song {
-  id: string;
-  title: string;
-  key: string;
-  tempo: number; // BPM
-  instrument: 'vocals' | 'guitar' | 'bass' | 'drums' | 'keys' | 'accordion';
-  position: number;
-  notes?: string;
-}
-```
-
-**Components:**
-- SetlistList, SetlistView, SongSelector
-- TabsViewer, TabsZoomControl, TabsFullscreenMode, TabsFilterBar
-
-### Module 2: Accounting Portal (`/accounting`)
-
-**Purpose:** Simple financial management with shareable monthly expense summaries.
-
-**Features:**
-- Dashboard with income/expenses/net profit metrics
-- Transaction manager (income, expenses, transfers tabs)
-- Monthly summary PDF generator
-- Email sharing template
-- Print-friendly format
-- Share link with expiry
-
-**Data Structure:**
-```typescript
-interface Transaction {
-  id: string;
-  type: 'income' | 'expense';
-  category: string; // e.g., 'venue', 'travel', 'tips'
-  amount: number;
-  date: string;
-  description: string;
-  paidBy?: string;
-}
-
-interface MemberBalance {
-  memberId: string;
-  name: string;
-  earned: number;
-  spent: number;
-  currentBalance: number;
-}
-```
-
-**UI Design:** Clean minimalist interface focused on numbers, high contrast for readability.
-
-### Module 3: Videos Page (`/videos`)
-
-**Purpose:** YouTube video gallery showcasing band performances.
-
-**Features:**
-- Grid/masonry layout with thumbnail and title
-- Filter by year/category/tour
-- Responsive YouTube embed player
-- Related videos sidebar
-- Category filtering and search
-
-**Data Structure:**
-```typescript
-interface Video {
-  id: string; // YouTube ID
-  title: string;
-  thumbnail: string;
-  uploadDate: string;
-  category: 'concert' | 'interview' | 'behind-scenes';
-}
-```
-
-### Simple Database Schema
-
-**Members Table:**
-```sql
-CREATE TABLE members (
-  id UUID PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  role VARCHAR(100),
-  instrument VARCHAR(100),
-  email VARCHAR(255) UNIQUE
-);
-```
-
-**Setlists Table:**
-```sql
-CREATE TABLE setlists (
-  id UUID PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  date DATE,
-  venue VARCHAR(255),
-  created_by UUID REFERENCES members(id)
-);
-```
-
-**Setlist Songs Table:**
-```sql
-CREATE TABLE setlist_songs (
-  id UUID PRIMARY KEY,
-  setlist_id UUID REFERENCES setlists(id) ON DELETE CASCADE,
-  song_title VARCHAR(255) NOT NULL,
-  key_signature VARCHAR(50),
-  tempo INTEGER,
-  instrument VARCHAR(100),
-  position INTEGER NOT NULL,
-  notes TEXT,
-  UNIQUE(setlist_id, position)
-);
-```
-
-**Transactions Table:**
-```sql
-CREATE TABLE transactions (
-  id UUID PRIMARY KEY,
-  type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense')),
-  category VARCHAR(100),
-  amount DECIMAL(10, 2) NOT NULL,
-  description TEXT,
-  date DATE NOT NULL,
-  paid_by UUID REFERENCES members(id),
-  reimbursed BOOLEAN DEFAULT FALSE
-);
-```
-
-**Videos Table:**
-```sql
-CREATE TABLE videos (
-  id UUID PRIMARY KEY,
-  youtube_id VARCHAR(20) UNIQUE NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  thumbnail_url TEXT,
-  category VARCHAR(50),
-  upload_date DATE
-);
-```
-
-**Sessions Table (Authentication):**
-```sql
-CREATE TABLE sessions (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES members(id),
-  token_hash VARCHAR(255) UNIQUE NOT NULL,
-  expires_at TIMESTAMP NOT NULL
-);
-```
-
-### Implementation Tasks
-
-#### Phase 1: Foundation Setup
-- [ ] Install React Router DOM dependency
-- [ ] Install Zustand for state management
-- [ ] Create authentication context/provider component
-- [ ] Build login page with session management
-- [ ] Update App.tsx with route structure
-- [ ] Create protected route wrapper component
-- [ ] Design responsive navigation layouts for each portal
-
-#### Phase 2: Musician Portal Development
-- [ ] Create SetlistList component with grid layout
-- [ ] Build SetlistView component for detailed view
-- [ ] Implement SongSelector with search functionality
-- [ ] Develop TabsViewer main container
-- [ ] Add TabsZoomControl with +/- buttons and keyboard shortcuts
-- [ ] Create TabsFullscreenMode toggle logic
-- [ ] Build TabsFilterBar with instrument dropdown
-- [ ] Integrate react-pdf library for PDF viewing
-- [ ] Implement zoom state management (min/max/current)
-- [ ] Add auto-scroll functionality when needed
-- [ ] Configure background blur for fullscreen mode
-- [ ] Create mock data for testing
-
-#### Phase 3: Accounting Portal Development
-- [ ] Build Dashboard component with metrics cards
-- [ ] Implement TransactionList component with filters
-- [ ] Create AddTransactionForm component
-- [ ] Develop MonthlySummaryPDF generation logic
-- [ ] Build EmailSharing template component
-- [ ] Create PrintView mode toggle
-- [ ] Implement ShareLink generator with expiry
-- [ ] Design clean minimalist UI styling
-- [ ] Add expense category breakdown chart
-- [ ] Add Inventory category to manage band fisical patrimony 
-
-
-#### Phase 4: Videos Page Development
-- [ ] Create VideoGallery grid component
-- [ ] Build VideoCard reusable component
-- [ ] Implement category filter tabs
-- [ ] Develop responsive YouTube embed player
-- [ ] Add related videos sidebar
-- [ ] Create timestamp navigation controls
-- [ ] Build video search functionality
-
-#### Phase 5: Backend Integration
-- [ ] Choose backend technology (Supabase or Firebase recommended for free tier)
-- [ ] Set up database with schema above
-- [ ] Create API endpoints for each data type
-- [ ] Implement file upload validation (PDF max 5MB)
-- [ ] Add authentication middleware
-- [ ] Connect frontend to backend APIs
-- [ ] Replace mock data with real API calls
-- [ ] Implement role-based access control
-
-#### Phase 6: Security Implementation
-- [ ] Configure session tokens with expiration
-- [ ] Set up CSRF protection
-- [ ] Add secure cookie flags (HttpOnly, Secure)
-- [ ] Implement row-level security for sensitive data
-- [ ] Validate all file uploads (type and size)
-- [ ] Add rate limiting to API endpoints
-- [ ] Configure input sanitization
-- [ ] Add SQL injection prevention
-- [ ] Set XSS protection headers
-
-#### Phase 7: Polish & Testing
-- [ ] Test on Chrome, Firefox, Safari, Edge
-- [ ] Verify mobile responsive behavior
-- [ ] Check tablet layout transitions
-- [ ] Audit accessibility (keyboard navigation)
-- [ ] Test screen reader compatibility
-- [ ] Verify color contrast ratios
-- [ ] Optimize performance (lazy loading)
-- [ ] Test PDF viewer zoom controls
-- [ ] Validate accounting calculations
-- [ ] Gather user feedback and iterate
-
-### File Structure (Updated)
-
-```
-project/
-├── src/
-│   ├── components/
-│   │   ├── ...existing components...
-│   │   ├── band-portal/
-│   │   │   ├── SetlistList.tsx
-│   │   │   ├── SetlistView.tsx
-│   │   │   ├── SongSelector.tsx
-│   │   │   ├── TabsViewer.tsx
-│   │   │   ├── TabsZoomControl.tsx
-│   │   │   ├── TabsFullscreenMode.tsx
-│   │   │   └── TabsFilterBar.tsx
-│   │   ├── accounting/
-│   │   │   ├── Dashboard.tsx
-│   │   │   ├── TransactionList.tsx
-│   │   │   ├── AddTransactionForm.tsx
-│   │   │   ├── MonthlySummary.tsx
-│   │   │   └── Inventory.stx 
-│   │   └── videos/
-│   │       ├── VideoGallery.tsx
-│   │       ├── VideoPlayer.tsx
-│   │       └── VideoCard.tsx
-│   ├── pages/
-│   │   ├── Home.tsx
-│   │   ├── Band.tsx
-│   │   ├── Accounting.tsx
-│   │   └── Videos.tsx
-│   ├── hooks/
-│   │   ├── useAuth.ts
-│   │   ├── useSetlists.ts
-│   │   └── useTransactions.ts
-│   ├── context/
-│   │   ├── AuthContext.tsx
-│   │   └── SetlistContext.tsx
-│   ├── services/
-│   │   ├── api.ts
-│   │   ├── pdfViewer.ts
-│   │   └── youtubeApi.ts
-│   └── ...existing files...
-├── docs/
-│   ├── dev_plan.md (this file)
-│   └── api_docs.md (future)
-└── ...existing files...
-```
-
-### Success Criteria
-
-The expansion will be considered successful when:
-- [ ] All three portals are functional
-- [ ] PDF viewer zoom controls work smoothly
-- [ ] Fullscreen mode provides clean display
-- [ ] Monthly summaries generate correctly
-- [ ] Authentication prevents unauthorized access
-- [ ] Mobile responsive on all devices
-- [ ] Cross-browser compatibility verified
-- [ ] User feedback is positive
-
----
-
-Last updated: May 16, 2026
-Project: Music Band Website Responsive Redesign & Management System Expansion
+**Deliverable:** the existing Sardinhas Nômades website is usable on small, medium, and large screens and presents content reliably.
+
+- [x] 6. Establish the React, TypeScript, and Vite application shell and render the public site.
+- [x] 7. Build the public-page sections for band profile, calendar, event descriptions, photo content, contact form UI, and footer.
+- [x] 8. Provide desktop navigation and a mobile menu with open/close behavior.
+- [x] 9. Load the current display/body fonts, apply a global image width constraint, and provide basic responsive text/button styles.
+- [x] 10. Test and correct overflow, spacing, readable type, touch targets, and section flow at narrow phone, tablet, and desktop widths; verified 320x568, 375x812, 820x1180, and 1366x768.
+- [x] 11. Make hero media fill mobile viewport behavior, keep parallax reduced for reduced-motion preferences, and preserve requested banner/background playback.
+- [x] 12. Check bio, event descriptions, carousel, calendar, and contact form layouts at each breakpoint; replace brittle fixed dimensions where they cause clipping or overlap.
+- [ ] 13. Give the contact form a defined outcome: send through a backend email provider to the agreed public inbox, with validation, success, and failure states. Provider selection and backend setup are pending.
+- [x] 14. Add accessible names/alt text, keyboard operation, visible focus, and appropriate heading order across the public page.
+- [x] 15. Add loading, empty, and error states for public calendar and media content so failed requests do not silently remove whole sections.
+- [ ] 16. Verify image/video loading cost and defer non-critical media; preserve a usable experience when autoplay is unavailable.
+
+**Open media follow-up:** the production build reports `banner-video.mov` at about 146 MB and the event photos at about 14 MB and 13 MB. The banner uses the existing 2.8 MB MP4 on mobile and browsers without QuickTime stream support, and retains the MOV where supported. Event-card images are lazy-loaded; the restored CSS background-image carousels are not. Preserve the intended footage, obtain optimized exports, and add deferred carousel image loading before public launch.
+
+**Contact form status:** the recipient inbox has been provided, but the email provider was deferred. The form is intentionally disabled with an explanation until a backend delivery path is configured; do not mark task 13 complete until successful and failed sends are tested.
+
+### Phase 2: Backend, CMS, and Public Content
+
+**Deliverable:** an authorized band editor can update public content and see those changes on that band's public site.
+
+- [ ] 17. Set up the selected backend project and separate development/production configuration; keep credentials out of source control.
+- [ ] 18. Define and migrate the core data model for bands, public profiles/pages, events, media, members, and content ownership; add validation and timestamps.
+- [ ] 19. Create the first band/workspace and a safe seed/import path for the existing Sardinhas Nômades content.
+- [ ] 20. Build an admin content workflow for profile text, contact links, images, event descriptions, and published/unpublished state.
+- [ ] 21. Connect calendar/event management to the public calendar; decide whether ICS remains the source of truth or becomes an import/export integration.
+- [ ] 22. Add media upload rules for allowed types, size limits, metadata, storage paths, and removal; ensure one band's files cannot be listed or fetched by another band.
+- [ ] 23. Make public pages load content by band slug and return a deliberate not-found state for unknown or unpublished bands.
+- [ ] 24. Add a preview/publish workflow so editors can review changes before they become public.
+- [ ] 25. Verify that public visitors can read only published public fields and cannot access admin operations or private member data.
+
+### Phase 3: Identity and Private Workspace
+
+**Deliverable:** band members can sign in and use role-limited private tools without exposing another band's data.
+
+**Implementation update:** Supabase email-link login replaces Google OAuth. Shared session/membership guards protect `/music` and `/admin`; a token-hash callback accepts login/invitation links. The admin member list and musician invitations use a JWT-validated Edge Function with service-only scoped SQL helpers and invitation throttling. A rerunnable trusted bootstrap script targets `mt.peresn@gmail.com`. Build, scoped lint and isolated backend tests are available; SMTP configuration, hosted migrations, function deployment, initial admin provisioning and real delivered-link verification remain activation requirements. See `docs/music_setup.md`. Broader CMS, role editing/removal and production acceptance gates remain pending; the public Google Calendar feed is unchanged.
+
+- [ ] 26. Implement sign-in, sign-out, session restoration, password recovery, and invite acceptance using the selected backend's supported flow.
+- [ ] 27. Define roles and permissions for owner/admin, musician, and finance manager; document whether one member may hold multiple roles.
+- [ ] 28. Build protected workspace navigation for `/admin` and `/music`, plus `/accounting` when that area is implemented; redirect unauthenticated users without losing their intended destination. `/band` remains a compatibility redirect to `/music`.
+- [ ] 29. Implement backend access policies for every private table and storage object, scoped by band membership and role.
+- [ ] 30. Add member invitation, role change, and removal flows; prevent removal of the last owner and revoke removed members' access.
+- [ ] 31. Add a band settings page for name, public slug, locale/time zone, currency, and basic branding.
+- [ ] 32. Add clear loading, expired-session, permission-denied, and backend-error states to private routes.
+- [ ] 33. Test direct URL access and API/storage requests for signed-out, wrong-role, removed-member, and cross-band cases.
+- [ ] 34. Add an accessible global theme preference only if a real light/dark theme is defined; persist the choice and respect the operating-system preference by default.
+
+### Phase 4: Musician Tools
+
+**Deliverable:** members can prepare a setlist and reliably read the correct music materials during rehearsal or performance.
+
+- [ ] 35. Define setlist and song fields, including ordering, key, tempo, notes, instrument, and optional date/venue; validate required and optional values.
+- [ ] 36. Build setlist list/detail views with create, edit, duplicate, delete, search, and stable song reordering.
+- [ ] 37. Build a song library and add existing songs to a setlist without duplicating their underlying records.
+- [ ] 38. Support instrument-specific sheet attachments and notes, with clear file ownership and replacement/removal behavior.
+- [ ] 39. Add an in-browser PDF viewer with loading/error states, bounded zoom, fit-to-width, and page navigation; choose a maintained viewer compatible with the app.
+- [ ] 40. Add a clean performance mode with fullscreen support, keyboard-accessible controls, and a reliable way to exit fullscreen.
+- [ ] 41. Add optional auto-scroll with start/pause/reset and speed control; keep it off until explicitly enabled.
+- [ ] 42. Add mock/example setlists and verify the musician workflow on mobile, tablet, and desktop without using real private data.
+- [ ] 43. Verify PDF uploads against configured type/size limits and test that unauthorized members cannot fetch another band's sheets.
+
+### Phase 5: Accounting and Inventory
+
+**Deliverable:** authorized members can record band finances and assets and produce a trustworthy period summary.
+
+- [ ] 44. Agree on currency, rounding, date/time-zone rules, categories, and whether balances represent cash flow, reimbursements, or member shares before implementing calculations.
+- [ ] 45. Define income, expense, transfer, reimbursement, and inventory-item records with audit metadata and band ownership.
+- [ ] 46. Build transaction create/edit/delete and filtering by date, type, category, and member; require confirmation for destructive actions.
+- [ ] 47. Show period totals, category breakdown, and member balances with explicit calculation rules and tests for edge cases.
+- [ ] 48. Build the band asset inventory with item details, status, purchase/value fields, custodian, and history where useful.
+- [ ] 49. Generate a printable/downloadable monthly summary and a shareable email draft; do not expose private reports through public URLs by default.
+- [ ] 50. Test calculations, currency formatting, permissions, and export output against known sample data before using real financial records.
+
+### Phase 6: Videos Page, Community, and Revenue Extensions
+
+**Deliverable:** the public site has a dedicated YouTube Videos experience alongside its photo carousel. Fan/community and revenue features remain optional extensions and must not delay the core member workflows.
+
+- [ ] 51. Build a dedicated Videos page/section for YouTube embeds, backed by managed video records with title, category, and publish status; include responsive playback, useful browsing/search, and navigation from the public site. Keep it separate from the existing photo carousel.
+- [ ] 52. Decide whether audience accounts and a membership directory are needed; define privacy, discoverability, blocking/reporting, and account deletion before building fan profiles or follows.
+- [ ] 53. If fan contributions are enabled, add moderation, reporting, consent, and retention controls before publishing user-generated content.
+- [ ] 54. Choose a donation/payment provider and define country/currency, fees, refunds, webhook verification, and failure states; store no card details in Collective.
+- [ ] 55. Validate fan-store scope and fulfillment responsibilities before integrating a commerce provider; keep order and payment data private and least-privileged.
+- [ ] 56. Define event notification preferences, opt-in/opt-out, channel, and delivery limits before implementing notifications.
+- [ ] 57. Evaluate Google Meet/rehearsal links as a small integration only after calendar ownership and permissions are clear; do not make video-call hosting part of the platform MVP.
+
+### Phase 7: Release Readiness and Operations
+
+**Deliverable:** the platform can be deployed, maintained, and used without relying on developer-only data or undocumented manual steps.
+
+- [ ] 58. Add automated checks for type/build, lint, core public behavior, authentication, role permissions, and backend access policies.
+- [ ] 59. Complete keyboard, screen-reader, contrast, reduced-motion, and responsive checks for public and private workflows.
+- [ ] 60. Add pagination or bounded queries for growing event, media, setlist, transaction, and inventory collections.
+- [ ] 61. Add route-level code splitting and defer large media/PDF code where it measurably improves load time.
+- [ ] 62. Configure production environment variables, domain/routing, HTTPS, storage policies, and safe error reporting without leaking private data.
+- [ ] 63. Configure database/storage backups and document a restore test and retention policy.
+- [ ] 64. Add user-facing privacy/contact information and document data export/deletion and account offboarding procedures.
+- [ ] 65. Test deployment and recovery with a staging band and non-sensitive sample data before onboarding real members.
+- [ ] 66. Run a cross-browser and real-device acceptance pass, fix release-blocking issues, and record known limitations.
+- [ ] 67. Gather feedback from the band, prioritize issues by impact, and publish the next iteration plan.
+
+## Release Gates
+
+- **Public-site baseline:** Phases 0-1 are usable and have responsive/accessibility checks recorded.
+- **Managed public site:** Phase 2 content is editable by an authorized user and public/private data boundaries are tested.
+- **Private beta:** Phases 3-5 pass role and cross-band access tests, musician workflow tests, and accounting calculation checks.
+- **First release:** the dedicated Videos page/section (task 51) and Phase 7 operational, privacy, accessibility, backup, and deployment checks are complete. Fan accounts, user-generated content, payments/store, notifications, and rehearsal links in Phase 6 remain out of scope unless explicitly selected.
+
+## Progress Summary
+
+Counts cover the 67 numbered implementation tasks. Checked items reflect functionality already found in the repository; partial implementations remain unchecked.
+
+| Workstream | Done | To do | Total |
+|---|---:|---:|---:|
+| Product and technical foundation | 5 | 0 | 5 |
+| Public website and responsive baseline | 9 | 2 | 11 |
+| Backend, CMS, and public content | 0 | 9 | 9 |
+| Identity and private workspace | 0 | 9 | 9 |
+| Musician tools | 0 | 9 | 9 |
+| Accounting and inventory | 0 | 7 | 7 |
+| Public media, community, and revenue extensions | 0 | 7 | 7 |
+| Release readiness and operations | 0 | 10 | 10 |
+| **Total** | **14** | **53** | **67** |
+
+**Overall tracked progress:** 14 of 67 tasks complete (about 21%). This is task completion, not a time estimate; task sizes vary. Supabase is selected for initial development; production cost and operational checks remain open.
+
+Last reviewed: November 10, 2026

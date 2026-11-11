@@ -13,6 +13,7 @@ interface UseCalendarEventsResult {
   events: CalendarEvent[];
   isLoading: boolean;
   error: string | null;
+  retry: () => void;
 }
 
 const MAX_EVENTS = 5;
@@ -28,11 +29,14 @@ export function useCalendarEvents(): UseCalendarEventsResult {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchEvents = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
         const response = await fetch(getFeedUrl(), {
           method: 'GET',
@@ -70,9 +74,9 @@ export function useCalendarEvents(): UseCalendarEventsResult {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [retryCount]);
 
-  return { events, isLoading, error };
+  return { events, isLoading, error, retry: () => setRetryCount((count) => count + 1) };
 }
 
 function unfoldICS(icsText: string): string {

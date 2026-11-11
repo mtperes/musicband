@@ -1,6 +1,6 @@
 'use client';
 // import { cn } from '@/lib/utils';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
  
 export function LettersPullUp({
@@ -11,6 +11,7 @@ export function LettersPullUp({
   className?: string;
 }) {
   const splittedText = text.split('');
+  const prefersReducedMotion = useReducedMotion() ?? false;
  
   const pullupVariant = {
     initial: { y: 10, opacity: 0 },
@@ -18,29 +19,31 @@ export function LettersPullUp({
       y: 0,
       opacity: 1,
       transition: {
-        delay: i * 0.1,
+        ...(prefersReducedMotion ? { duration: 0 } : { delay: i * 0.1 }),
       },
     }),
   };
-  const ref = React.useRef(null);
+  const ref = React.useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true });
   return (
-    <div className="flex justify-center">
+    <span ref={ref} className={`flex justify-center ${className}`}>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true" className="flex justify-center">
       {splittedText.map((current, i) => (
-        <motion.div
+        <motion.span
           key={i}
-          ref={ref}
           variants={pullupVariant}
-          initial="initial"
-          animate={isInView ? 'animate' : ''}
+          initial={prefersReducedMotion ? false : 'initial'}
+          animate={prefersReducedMotion || isInView ? 'animate' : ''}
           custom={i}
-          className={' text-center font-bold '}
+          className="text-center font-bold"
            
          
         >
           {current == ' ' ? <span>&nbsp;</span> : current}
-        </motion.div>
+        </motion.span>
       ))}
-    </div>
+      </span>
+    </span>
   );
 }

@@ -54,6 +54,7 @@
   
 }
 #root {
+  isolation: isolate;
   width: 100%;
   margin: 0 auto;
   text-align: center;
@@ -61,8 +62,8 @@
 }
 .logo {
   position: fixed;
-  width: 4em;
-  height: 4em;
+  width: 4rem;
+  height: 4rem;
   transition: all 300ms;
   cursor: pointer;
   z-index: 125;
@@ -148,9 +149,34 @@ p{
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-image: url('../public/w-bg.mp4');
   opacity: 1;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 200;
+  padding: 0.75rem 1rem;
+  transform: translateY(-150%);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #172a2c;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.background-video {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: -1;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  opacity: 1;
+  filter: blur(45px);
 }
 
 
@@ -158,9 +184,17 @@ p{
 @media (max-width: 767px) {
   .logo {
     padding: .3rem; 
-    width: 5em;
-    height: 5em;
+    width: 5rem;
+    height: 5rem;
     transition: all 300ms;
+  }
+
+  .background-video {
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100vh;
+    object-fit: cover;
+    filter: blur(10px);
   }
 
   h1,h2{

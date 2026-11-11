@@ -67,7 +67,7 @@ project/
 6. **Contact Form** – Simple form for band members to reach out.
 7. **Events Gallery** – SocialCarousel showing band photos with autoplay.
 8. **Events List** – Two event descriptions (Carnaval de Lisboa, Galas e Festas) with images.
-9. **Music/Video Gallery** – Photo gallery with responsive grid.
+9. **Photo Gallery** – A public carousel for band photos. This is separate from the planned **Videos** page/section, which will present YouTube embeds.
 10. **Private Spaces** – Dark/light mode toggle for band members to manage content.
 11. **Setlists & Music Sheets** – Planned feature for musicians to manage setlists and PDF sheet readers.
 12. **Accounting** – Planned financial tracking for band members and roles.
@@ -146,3 +146,7 @@ The "Collective" platform has a strong foundation as a responsive, animated sing
 - Review the suggestions and prioritize based on immediate needs.
 - Start with the responsive design improvements (Phase 1) to ensure mobile users have an optimal experience.
 - Begin planning the CMS architecture to support the planned expansion.
+
+
+**Personal Context**
+> I'm part of a band called sardinhas nômades, it is the foundation current code, it must be preserved and improoved over as being part of the first product / poof of concept 

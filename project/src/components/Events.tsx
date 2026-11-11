@@ -1,31 +1,28 @@
 // import { rect } from 'framer-motion/client';
 import React from 'react';
-import { useRef } from 'react';
-// import { keyframes } from '@emotion/react';
+import { useReducedMotion } from 'framer-motion';
 import imgSrc from"/public/events/events1.jpg";
 import imgSrc2 from"/public/events/events2.jpg";
 import SectionTilte from './sectionTitle';
-import videoSrc from '/public/w-bg.mp4';
+import MediaImage from './MediaImage';
+import videoSrc from '/w-bg.mp4';
 import { TextFade } from '../effects/TextFade';
 const Events: React.FC = () => {
-const vidRef = useRef<HTMLVideoElement | null>(null);
-   if (vidRef.current) {
-      vidRef.current.playbackRate = 0.4;
-    }
+        const prefersReducedMotion = useReducedMotion() ?? false;
 
     return (
-        <section className='block justify-center' id='events'>
+                <section className='block justify-center px-2 sm:px-6 lg:px-10' id='events' aria-labelledby='events-heading'>
 
-            <SectionTilte titleText="Eventos" />
+                        <SectionTilte titleText="Eventos" id="events-heading" />
 
-            <article className=' h-1/3 md:mx-10 top-auto bg-sky-500/25      md:block lg:flex max-w-screen  p-0 mt-10 mb-10 rounded-4xl overflow-clip '>
-              <img className=' z-1' src={imgSrc} alt="Carnaval de Lisboa" />
+                        <article className='relative isolate mx-auto mt-10 mb-10 grid max-w-screen-2xl grid-cols-1 overflow-hidden rounded-4xl bg-sky-500/25 p-0 lg:grid-cols-2'>
+                              <MediaImage className='order-1 h-64 w-full object-cover sm:h-80 lg:h-full lg:min-h-[30rem]' src={imgSrc} alt="Sardinhas Nômades no Carnaval de Lisboa" loading="lazy" decoding="async" />
                 
-               <div className='p-10 md:mx-10 lg:mt-[30%]    z-10 rounded-4xl lg:absolute lg:w-[60vw] right-0 '>  
-                  <video className='video-bg 'style={styles.bgVideo} id="bgVideo" ref={vidRef}  src={videoSrc}   autoPlay muted loop ></video>  
-                <TextFade direction="up">  
-                <h2 className=' text-bold z-10 mb-3 '>Carnaval de Lisboa</h2>
-                <p className='z-10 text-justify  text-1xl'>O Cortejo Sardélico já faz parte do calendário cultural de Lisboa,
+                             <div className='relative isolate order-2 bg-sky-500/25 p-5 sm:p-8 lg:flex lg:items-center lg:p-10'>  
+                                    <video className='pointer-events-none absolute inset-0 h-full w-full object-cover' style={styles.bgVideo} src={videoSrc} poster="/events/events1.jpg" autoPlay={!prefersReducedMotion} muted loop={!prefersReducedMotion} playsInline preload={prefersReducedMotion ? "none" : "metadata"} aria-hidden="true" tabIndex={-1} />
+                                <TextFade className="relative z-10" direction="up">  
+                                <h3 className='mb-3 text-2xl font-bold md:text-3xl'>Carnaval de Lisboa</h3>
+                                <p className='text-justify text-base sm:text-lg'>O Cortejo Sardélico já faz parte do calendário cultural de Lisboa,
                  trazendo irreverência, ritmo e muita animação para o carnaval lisboeta. 
                  Com performances vibrantes e envolventes, a Sardinhas Nômades transforma 
                  as ruas em um verdadeiro espetáculo de música e alegria, contagiando a todos com
@@ -35,13 +32,13 @@ const vidRef = useRef<HTMLVideoElement | null>(null);
                 </div> 
             </article>
 
-            <article  className=' h-1/3 md:mx-10  md:block lg:flex  max-w-screen    p-0 mt-10 mb-10 bg-sky-500/25 rounded-4xl overflow-clip '>
+                <article className='relative isolate mx-auto mt-10 mb-10 grid max-w-screen-2xl grid-cols-1 overflow-hidden rounded-4xl bg-sky-500/25 p-0 lg:grid-cols-2'>
 
-               <div className='text-right  lg:mt-[40%] p-10 lg:absolute lg:w-[60vw] left-0 z-10 rounded-4xl lg:bg-sky-500/25 lg:mx-10'>
-               <video className='video-bg 'style={styles.bgVideo} id="bgVideo" ref={vidRef}  src={videoSrc}   autoPlay muted loop ></video> 
-               <TextFade direction="up"> 
-                  <h2 className='text-3xl text-bold z-10 mb-3'>Galas e Festas</h2>
-              <p className='font-(family-name:--font1family) text-justify text-2xl'>  A Sardinhas Nômades brilha nas galas e eventos
+                    <div className='relative isolate order-2 bg-sky-500/25 p-5 sm:p-8 lg:order-1 lg:flex lg:items-center lg:p-10'>
+                    <video className='pointer-events-none absolute inset-0 h-full w-full object-cover' style={styles.bgVideo} src={videoSrc} poster="/events/events2.jpg" autoPlay={!prefersReducedMotion} muted loop={!prefersReducedMotion} playsInline preload={prefersReducedMotion ? "none" : "metadata"} aria-hidden="true" tabIndex={-1} />
+                    <TextFade className="relative z-10" direction="up">
+                        <h3 className='mb-3 text-2xl font-bold md:text-3xl'>Galas e Festas</h3>
+                  <p className='text-justify text-base font-(family-name:--font1family) sm:text-lg'>A Sardinhas Nômades brilha nas galas e eventos
                  mais prestigiados, levando nosso som contagiante e performances
                   inesquecíveis para cada ocasião. Com uma mistura única de ritmos
                    e uma presença de palco inigualável, garantimos que cada festa se torne
@@ -49,7 +46,7 @@ const vidRef = useRef<HTMLVideoElement | null>(null);
                     só a nossa fanfarra pode proporcionar! </p></TextFade>
                 
                 </div> 
-                      <img className='z-1' src={imgSrc2} alt="Carnaval de Lisboa" />
+                      <MediaImage className='order-1 h-64 w-full object-cover sm:h-80 lg:order-2 lg:h-full lg:min-h-[30rem]' src={imgSrc2} alt="Sardinhas Nômades em uma gala ou festa" loading="lazy" decoding="async" />
             </article>
 
 
@@ -64,8 +61,8 @@ const vidRef = useRef<HTMLVideoElement | null>(null);
         width: '100%',
         height: '100%',
         objectFit: 'cover' as const,
-        opacity: .8,
-        zIndex: -1,
+        opacity: .25,
+        zIndex: 0,
         borderRadius: '30px',
        
     },

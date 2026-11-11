@@ -42,13 +42,16 @@ const Logo: React.FC = () => {
 
     <section  style={styles.logostyle}>
 
-        <button className=' w-1.5 h-1.5' onClick={() => scrollTo("home")}>  <motion.img
+        <button aria-label="Voltar ao início" className='w-1.5 h-1.5' onClick={() => scrollTo("home")}>  <motion.img
         style={{
           position: "absolute" as const,
           translateY: y,
           translateX: x,
           overflow: "visible",
           scale: scaleLogo,
+          aspectRatio: "1 / 1",
+          objectFit: "contain" as const,
+          maxWidth: "none",
           zIndex: 125,
           rotate: rotateLogo,
           opacity: opacity,

@@ -1,0 +1,52 @@
+.workspace {
+  font-family: "Rubik", sans-serif;
+  text-align: left;
+  letter-spacing: 0;
+}
+
+.workspace :is(h1, h2, h3, label, button, input, select, p) {
+  font-family: inherit;
+  letter-spacing: 0;
+}
+
+.workspace h1 {
+  font-size: 1.875rem;
+  line-height: 1.2;
+}
+
+.workspace h2 {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.workspace :is(h3, label, button, input, select, p) {
+  font-size: 0.875rem;
+}
+
+.workspace p {
+  font-weight: 400;
+}
+
+.workspace button {
+  margin: 0;
+  background-color: white;
+  cursor: pointer;
+}
+
+.workspace button:disabled {
+  cursor: not-allowed;
+}
+
+.workspace li {
+  display: flex;
+  width: 100%;
+  opacity: 1;
+}
+
+.workspace section {
+  margin-bottom: 0;
+}
+
+.workspace a {
+  color: inherit;
+}

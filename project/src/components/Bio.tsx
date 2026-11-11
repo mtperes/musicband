@@ -1,34 +1,32 @@
 import React from "react";
 import "../index.css";
 import BandCarousel from "./BandCarousel";
-import { b } from "framer-motion/client";
+import { useReducedMotion } from "framer-motion";
 import SectionTilte from "./sectionTitle";
 import { TextFade } from "../effects/TextFade"; 
-import videoSrc from "/public/w-bg.mp4";
-import { useRef } from "react";
+import videoSrc from "/w-bg.mp4";
 const Bio: React.FC = () => {
-  const vidRef = useRef<HTMLVideoElement | null>(null);
-  if (vidRef.current) {
-    vidRef.current.playbackRate = 1;
-  }
+  const prefersReducedMotion = useReducedMotion() ?? false;
   return (
-    <section className="bio h-screen" id="bio">
-      <SectionTilte titleText="O Cardume" />
+    <section className="bio min-h-screen px-3 sm:px-5 md:px-8" id="bio" aria-labelledby="bio-heading">
+      <SectionTilte titleText="O Cardume" id="bio-heading" />
       <BandCarousel />
 
-      <article className="md:-mt-40 lg:mx-70 -mt-20 z-10 p-4 lg:p-10 relative bg-sky-500/20 rounded-4xl font-(family-name:--font1family) text-justify">
+      <article className="relative z-10 -mt-20 rounded-4xl bg-sky-500/20 p-4 text-justify sm:p-5 md:-mt-32 md:p-8 lg:mx-70 lg:-mt-40 lg:p-10 font-(family-name:--font1family)">
         <video
           className="video-bg "
           style={styles.bgVideo}
-          id="bgVideo"
-          ref={vidRef}
           src={videoSrc}
-          autoPlay
+          autoPlay={!prefersReducedMotion}
           muted
-          loop
+          loop={!prefersReducedMotion}
+          playsInline
+          preload={prefersReducedMotion ? "none" : "metadata"}
+          aria-hidden="true"
+          tabIndex={-1}
         ></video>
         <TextFade direction="up">
-              <h2 className="mb-3"> Sardinhas Nômades</h2>
+              <h3 className="mb-3"> Sardinhas Nômades</h3>
           <p className="mb-10">
              Compomos uma vibrante
             fanfarra formada em 2020, composta por talentosos músicos que

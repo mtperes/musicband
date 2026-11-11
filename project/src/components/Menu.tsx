@@ -22,8 +22,9 @@ const ITEMS = [
   { id: "contact", label: "Contato" },
 ];
 
+const COLORS_TOP = ["#13FFAA69", "#e4530069", "#DD335C69"];
+
 const Menu: React.FC = () => {
-  const COLORS_TOP = ["#13FFAA69", "#e4530069", "#DD335C69"];
   const color = useMotionValue(COLORS_TOP[0]);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ const Menu: React.FC = () => {
       repeatType: "mirror",
                                
     });
-  }, []);
+  }, [color]);
 
   const backgroundImage = useMotionTemplate`radial-gradient( ellipse farthest-corner at 10px 50%,  ${color} 20%, #ffffff05 60%)`;
 
@@ -93,7 +94,7 @@ const Menu: React.FC = () => {
   };
 
   return (
-    <div ref={menuRef} className="contents">
+    <nav ref={menuRef} className="contents" aria-label="Navegação principal">
       {/* Mobile: icon toggle button */}
       <motion.button
         type="button"
@@ -102,7 +103,7 @@ const Menu: React.FC = () => {
         aria-controls="main-menu"
         onClick={() => setIsOpen((v) => !v)}
         whileTap={{ scale: 0.9 }}
-        className="md:hidden fixed right-4 top-4 z-[10] flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-black/40 backdrop-blur-md"
+        className="md:hidden fixed right-4 top-4 z-[140] flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-black/40 backdrop-blur-md"
         style={{ ...styles.button, color: "#ffffff" }}
       >
         <span className="relative block h-4 w-6">
@@ -136,7 +137,7 @@ const Menu: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -12, scale: 0.96 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="md:hidden fixed right-4 top-[4.5rem] z-[105] min-w-[12rem] overflow-hidden rounded-3xl border border-white/20 bg-sky-500/15  shadow-2xl backdrop-blur-xl"
+            className="md:hidden fixed right-4 top-[4.5rem] z-[130] min-w-[12rem] overflow-hidden rounded-3xl border border-white/20 bg-sky-500/15  shadow-2xl backdrop-blur-xl"
             style={{ backgroundImage }}
           >
             <ul id="main-menu" className="menu flex flex-col items-stretch gap-1">
@@ -159,7 +160,7 @@ const Menu: React.FC = () => {
       {/* Desktop: horizontal menu */}
       <motion.ul
         className="menu fixed left-0 pl-40 top-[6vh] hidden flex-row items-center gap-2 p-6 md:flex md:max-w-[100vw]"
-        style={{ backgroundImage, backgroundPosition: "top left", zIndex: 100 }}
+        style={{ backgroundImage, backgroundPosition: "top left", zIndex: 140 }}
       >
         {ITEMS.map((item) => (
           <motion.li
@@ -178,7 +179,7 @@ const Menu: React.FC = () => {
           </motion.li>
         ))}
       </motion.ul>
-    </div>
+    </nav>
   );
 };
 
