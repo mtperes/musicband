@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import videoSrc from "../assets/w-bg.mp4";
+import videoSrc from "../assets/banner-video.mp4";
 
 
 const Banner: React.FC = () => {
