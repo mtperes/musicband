@@ -1,6 +1,6 @@
 
 import { lazy, Suspense, useEffect, useRef } from 'react';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from '@vercel/analytics/react';
 import { BrowserRouter, Navigate, Route, Routes, Link } from 'react-router-dom';
 import Banner from './components/Banner'
 import Menu from './components/Menu'
@@ -24,6 +24,7 @@ const AuthConfirm = lazy(() => import('./components/AuthConfirm'));
 
 function App() {
   return (
+    <>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<PublicSite />} />
@@ -36,6 +37,7 @@ function App() {
       </Routes>
     </BrowserRouter>
     <Analytics />
+    </>
   );
 }
 
