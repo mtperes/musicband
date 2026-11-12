@@ -78,8 +78,8 @@ export default defineConfig(({ mode }) => {
   }
   return {
   define: {
-    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || env.SUPABASE_PUBLIC_URL || ''),
-    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || env.SUPABASE_PUBLIC_ANON_KEY || ''),
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || env.SUPABASE_URL || env.SUPABASE_PUBLIC_URL || ''),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || env.SUPABASE_PUBLIC_ANON_KEY || ''),
   },
   plugins: [react(), tailwindcss(), calendarProxyPlugin(), contactPlugin, viteStaticCopy({ targets: ['cmaps', 'standard_fonts', 'wasm'].map((directory) => ({ src: normalizePath(join(pdfjsDirectory, directory, '*')), dest: `pdfjs/${directory}` })) })],
   server: {

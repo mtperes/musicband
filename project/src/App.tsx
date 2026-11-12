@@ -1,5 +1,6 @@
 
 import { lazy, Suspense, useEffect, useRef } from 'react';
+import { Analytics } from "@vercel/analytics/next"
 import { BrowserRouter, Navigate, Route, Routes, Link } from 'react-router-dom';
 import Banner from './components/Banner'
 import Menu from './components/Menu'
@@ -34,6 +35,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    <Analytics />
   );
 }
 
