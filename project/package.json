@@ -5,19 +5,32 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "vite --mode mock",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test:calendar": "node --experimental-strip-types --test tests/calendarEvents.test.ts",
+    "test:contact": "node --experimental-strip-types --test tests/contact.test.ts",
+    "test:music": "node --experimental-strip-types --test tests/musicPerformance.test.ts",
+    "test:music:browser": "playwright test",
+    "setup:admin": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/setup-admin.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@georgedoescode/spline": "^1.0.1",
+    "@supabase/supabase-js": "^2.119.0",
     "@tailwindcss/vite": "^4.1.16",
+    "@vercel/analytics": "^2.0.1",
     "axios": "^1.13.2",
     "cors": "^2.8.6",
-    "framer-motion": "^12.23.12",
+    "framer-motion": "^12.40.0",
+    "ical.js": "^2.2.1",
+    "lucide-react": "^1.71.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-pdf": "^11.0.0",
+    "react-router-dom": "^7.18.5",
+    "resend": "^6.38.0",
     "simplex-noise": "^4.0.3",
     "spline": "^0.0.0",
     "styled-components": "^6.1.19",
@@ -27,6 +40,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^25.9.1",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
@@ -36,6 +51,7 @@
     "globals": "^16.3.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vite-plugin-static-copy": "^4.1.1"
   }
 }

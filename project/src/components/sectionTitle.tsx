@@ -2,20 +2,22 @@ import React from 'react';
 
 import imgSrc from '../assets/sardinhas-head-logo.svg';
 import imgSrc2 from '../assets/sardinhas-logo-tail.svg';
+import { LettersPullUp } from '../effects/letters-pull-up';
 
-const SectionTitle: React.FC<{ titleText: string }> = ({ titleText }) => {
+const SectionTitle: React.FC<{ titleText: string; id?: string }> = ({ titleText, id }) => {
   return (
     <>
-      <h1 className="flex justify-center text-(--primary-color)">
+      <h2 id={id} className="flex justify-center text-(--primary-color) mt-2 mb-3">
         {' '}
         <img
-          className="h-12 w-12 mt-3 "
+          className="mt-1 h-7 w-7 opacity-25 sm:h-10 sm:w-10 lg:h-12 lg:w-12"
           src={imgSrc}
-          alt="head"
+          alt=""
+          aria-hidden="true"
         />{' '}
-            {titleText}{' '}
-        <img className="h-12 w-12 mt-3" src={imgSrc2} alt="tail" />{' '}
-      </h1>
+           <LettersPullUp text={titleText} />{' '}
+        <img className="mt-1 h-7 w-7 opacity-25 sm:h-10 sm:w-10 lg:h-12 lg:w-12" src={imgSrc2} alt="" aria-hidden="true" />{' '}
+      </h2>
     </>
   );
 };
