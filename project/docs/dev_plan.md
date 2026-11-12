@@ -151,14 +151,16 @@ Use Supabase as the initial managed backend. The platform's core records (bands,
 
 **Deliverable:** members can prepare a setlist and reliably read the correct music materials during rehearsal or performance.
 
+**Implementation update (November 12, 2026):** the repertoire and shared ordered setlists are implemented, including the 17-song Brasilidades seed. PDFs can be uploaded or associated with a song/instrument within the same band. A lazy PDF.js performance reader fills the window, supports optional native fullscreen, separate page/song navigation, zoom, a song drawer, best-effort wake lock, remembered position/instrument and next-score preloading. Build, scoped lint, isolated SQL tests and synthetic-PDF browser checks are available. The eight browser checks cover desktop, tablet, portrait-phone and landscape-phone dimensions; native mobile fullscreen, gestures and wake lock still need real-device checks. Apply the song-sheet migration and associate authorized PDFs before live use. Setlist duplication/search, tempo/notes/event fields, offline support, auto-scroll and pedal mapping remain pending. See `docs/music_setup.md`.
+
 - [ ] 35. Define setlist and song fields, including ordering, key, tempo, notes, instrument, and optional date/venue; validate required and optional values.
 - [ ] 36. Build setlist list/detail views with create, edit, duplicate, delete, search, and stable song reordering.
-- [ ] 37. Build a song library and add existing songs to a setlist without duplicating their underlying records.
+- [x] 37. Build a song library and add existing songs to a setlist without duplicating their underlying records.
 - [ ] 38. Support instrument-specific sheet attachments and notes, with clear file ownership and replacement/removal behavior.
-- [ ] 39. Add an in-browser PDF viewer with loading/error states, bounded zoom, fit-to-width, and page navigation; choose a maintained viewer compatible with the app.
-- [ ] 40. Add a clean performance mode with fullscreen support, keyboard-accessible controls, and a reliable way to exit fullscreen.
+- [x] 39. Add an in-browser PDF viewer with loading/error states, bounded zoom, fit-to-width, and page navigation; choose a maintained viewer compatible with the app.
+- [x] 40. Add a clean performance mode with fullscreen support, keyboard-accessible controls, and a reliable way to exit fullscreen.
 - [ ] 41. Add optional auto-scroll with start/pause/reset and speed control; keep it off until explicitly enabled.
-- [ ] 42. Add mock/example setlists and verify the musician workflow on mobile, tablet, and desktop without using real private data.
+- [x] 42. Add mock/example setlists and verify the musician workflow on mobile, tablet, and desktop without using real private data.
 - [ ] 43. Verify PDF uploads against configured type/size limits and test that unauthorized members cannot fetch another band's sheets.
 
 ### Phase 5: Accounting and Inventory
@@ -217,12 +219,19 @@ Counts cover the 67 numbered implementation tasks. Checked items reflect functio
 | Public website and responsive baseline | 9 | 2 | 11 |
 | Backend, CMS, and public content | 0 | 9 | 9 |
 | Identity and private workspace | 0 | 9 | 9 |
-| Musician tools | 0 | 9 | 9 |
+| Musician tools | 4 | 5 | 9 |
 | Accounting and inventory | 0 | 7 | 7 |
 | Public media, community, and revenue extensions | 0 | 7 | 7 |
 | Release readiness and operations | 0 | 10 | 10 |
-| **Total** | **14** | **53** | **67** |
+| **Total** | **18** | **49** | **67** |
 
-**Overall tracked progress:** 14 of 67 tasks complete (about 21%). This is task completion, not a time estimate; task sizes vary. Supabase is selected for initial development; production cost and operational checks remain open.
+**Overall tracked progress:** 18 of 67 tasks complete (about 27%). This is task completion, not a time estimate; task sizes vary. Supabase is selected for initial development; production cost and operational checks remain open.
 
-Last reviewed: November 10, 2026
+
+## Refinement: Performance-First Music Tools
+
+Prioritize musicians using phones and tablets while playing. Setlists are the performance guide: show the current song's instrument-specific PDF as the primary full-window document surface, with fast, stable previous/next song controls and an ordered song drawer. Page scrolling and zoom must never accidentally change songs. Missing parts must remain visible in concert order rather than being silently skipped.
+
+The implemented first slice links authorized PDFs to songs, renders scores with PDF.js, preloads the next score, and remembers the instrument and setlist position on the device. Native fullscreen and screen wake lock are optional enhancements; the full-window reader must remain usable without them. Before stage use, associate the band's actual PDFs and verify readability, loading, rotation, navigation and exit behavior on real phones and tablets. Offline downloads, auto-scroll and pedal integration are later extensions.
+
+Last reviewed: November 12, 2026

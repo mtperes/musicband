@@ -1,8 +1,13 @@
-import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { defineConfig, loadEnv, normalizePath, type Plugin } from 'vite'
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
+import { contactSettings, createNodeContactHandler } from './server/contact.ts'
 
+const pdfjsDirectory = dirname(createRequire(import.meta.url).resolve('pdfjs-dist/package.json'))
 const CALENDAR_ICS_URL =
   'https://calendar.google.com/calendar/ical/1aa1550534d11c7cdfa85fbcbf1b0852806cdac52efb8e540d22ffdfbb3d6ea5%40group.calendar.google.com/public/basic.ics'
 
@@ -61,12 +66,22 @@ function calendarProxyPlugin(): Plugin {
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const contact = createNodeContactHandler(contactSettings(env, mode !== 'production' && env.CONTACT_EMAIL_TEST_MODE !== '0'))
+  const contactPlugin: Plugin = {
+    name: 'contact-email',
+    configureServer(server) {
+      server.middlewares.use((request, response, next) => {
+        if (request.url?.split('?')[0] !== '/api/contact') return next()
+        void contact(request, response)
+      })
+    },
+  }
   return {
   define: {
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || env.SUPABASE_PUBLIC_URL || ''),
     'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || env.SUPABASE_PUBLIC_ANON_KEY || ''),
   },
-  plugins: [react(), tailwindcss(), calendarProxyPlugin()],
+  plugins: [react(), tailwindcss(), calendarProxyPlugin(), contactPlugin, viteStaticCopy({ targets: ['cmaps', 'standard_fonts', 'wasm'].map((directory) => ({ src: normalizePath(join(pdfjsDirectory, directory, '*')), dest: `pdfjs/${directory}` })) })],
   server: {
     port: 5173,
   },
