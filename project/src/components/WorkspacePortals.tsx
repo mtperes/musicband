@@ -43,7 +43,7 @@ function WorkspaceLayout({
               </NavLink>
             ))}
             <Link to="/" className="ml-2 px-2 py-2 text-sm text-[#435552] underline underline-offset-4">
-              Site público
+              Site
             </Link>
           </nav>
         </div>

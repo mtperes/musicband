@@ -29,7 +29,7 @@ function SheetAttachment({ sheet, songs, busy, onSave }: { sheet: Sheet; songs: 
 
 export default function MusicLibrary() {
   const { session, memberships: allMemberships } = useWorkspaceAuth();
-  const memberships = allMemberships.filter((member) => member.roles.some((role) => ['owner', 'admin', 'musician'].includes(role)));
+  const memberships = allMemberships.filter((member) => member.roles.some((role) => ['owner', 'admin', 'musician', 'viewer'].includes(role)));
   const [loading, setLoading] = useState(false);
   const [bandId, setBandId] = useState(memberships[0]?.band_id ?? '');
   const [sheets, setSheets] = useState<Sheet[]>([]);
@@ -50,6 +50,7 @@ export default function MusicLibrary() {
   const inputRef = useRef<HTMLInputElement>(null);
   const operation = useRef(0);
   const member = memberships.find((item) => item.band_id === bandId);
+  const canRead = Boolean(member);
   const canEdit = member?.roles.some((role) => ['owner', 'admin', 'musician'].includes(role)) ?? false;
   const visibleSheets = sheets.filter((sheet) => `${sheet.title} ${sheet.instrument} ${sheet.file_name}`.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
 
@@ -60,7 +61,7 @@ export default function MusicLibrary() {
     setSongs([]);
     setViewer(null);
     setPendingDelete(null);
-    if (!supabase || !bandId || !canEdit) return;
+    if (!supabase || !bandId || !canRead) return;
     setLoading(true);
     setSongsLoading(true);
     void supabase.from('music_sheets').select('*').eq('band_id', bandId).order('title').then(({ data, error: loadError }) => {
@@ -76,7 +77,7 @@ export default function MusicLibrary() {
       setSongsLoading(false);
     });
     return () => { active = false; };
-  }, [bandId, canEdit, refresh]);
+  }, [bandId, canRead, refresh]);
 
   async function upload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -128,7 +129,7 @@ export default function MusicLibrary() {
   }
 
   async function attachSheet(sheet: Sheet, targetSong: string, targetInstrument: string) {
-    if (!supabase || busy) return;
+    if (!supabase || !canEdit || busy) return;
     setBusy(true);
     setError('');
     const currentOperation = operation.current;
@@ -143,7 +144,7 @@ export default function MusicLibrary() {
   }
 
   async function removeSheet() {
-    if (!supabase || !pendingDelete || busy) return;
+    if (!supabase || !canEdit || !pendingDelete || busy) return;
     setBusy(true);
     setError('');
     try {
@@ -168,17 +169,17 @@ export default function MusicLibrary() {
         : !memberships.length ? <p role="status" className="mt-8">A sua conta ainda não tem acesso a uma banda. Contacte o administrador.</p>
         : <>
           <label className="mt-6 flex max-w-sm flex-col gap-1 text-sm">Banda<select className={control} value={bandId} disabled={busy} onChange={(event) => setBandId(event.target.value)}>{memberships.map((item) => <option key={item.band_id} value={item.band_id}>{item.bands?.name ?? item.band_id}</option>)}</select></label>
-          {!canEdit ? <p role="status" className="mt-8">Não tem permissão para aceder às partituras desta banda.</p> : <>
+          {!canRead ? <p role="status" className="mt-8">Não tem permissão para aceder às partituras desta banda.</p> : <>
             <div aria-label="Biblioteca musical" className="mt-6 flex flex-wrap gap-1 border-b border-[#bdcfca] pb-2">
               {([{ id: 'setlists', label: 'Setlists' }, { id: 'repertoire', label: 'Repertório' }, { id: 'sheets', label: 'PDFs' }] as const).map((view) => <button key={view.id} type="button" aria-pressed={musicView === view.id} aria-controls={`music-${view.id}`} className={`${command} ${musicView === view.id ? 'bg-[#dcece7] font-semibold' : ''}`} onClick={() => setMusicView(view.id)}>{view.label}</button>)}
             </div>
-            <div id="music-setlists" hidden={musicView !== 'setlists'}><Setlists key={bandId} bandId={bandId} songs={songs} sheets={sheets} songsLoading={songsLoading} /></div>
+            <div id="music-setlists" hidden={musicView !== 'setlists'}><Setlists key={`${bandId}-${canEdit}`} bandId={bandId} songs={songs} sheets={sheets} songsLoading={songsLoading} canEdit={canEdit} /></div>
             <div id="music-repertoire" hidden={musicView !== 'repertoire'}>
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4"><h2 className="text-lg font-medium">Repertório <span className="text-sm text-[#52625f]">({songs.length})</span></h2><label className="relative w-full sm:w-72"><Search className="absolute left-3 top-3 text-[#52625f]" size={18} /><input type="search" aria-label="Pesquisar repertório" placeholder="Pesquisar repertório" className={`${control} w-full pl-10`} value={songQuery} onChange={(event) => setSongQuery(event.target.value)} /></label></div>
             <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[40rem] text-left text-sm"><thead><tr className="border-b border-[#bdcfca] text-[#52625f]"><th className="py-2 pr-3">Ritmo</th><th className="py-2 pr-3">Música</th><th className="py-2 pr-3">Tom (C / Eb)</th><th className="py-2 pr-3">Partituras</th><th className="py-2">Ouvir</th></tr></thead><tbody>{songs.filter((song) => `${song.rhythm} ${song.title} ${song.artist}`.toLocaleLowerCase().includes(songQuery.toLocaleLowerCase())).map((song) => <tr key={song.id} className="border-b border-[#d6dfdc] align-top"><td className="py-2 pr-3">{song.rhythm}</td><td className="py-2 pr-3"><span className="font-medium">{song.title}</span>{song.artist && <span className="block text-[#52625f]">{song.artist}</span>}</td><td className="py-2 pr-3">{[song.key_c, song.key_eb].filter(Boolean).join(' / ')}</td><td className="py-2 pr-3"><span className="flex flex-wrap gap-x-3">{song.song_parts.map((part) => <a key={part.instrument} className="underline" href={part.url} target="_blank" rel="noopener noreferrer">{part.instrument}</a>)}</span></td><td className="py-2"><span className="flex flex-wrap gap-x-3">{song.video_url && <a className="underline" href={song.video_url} target="_blank" rel="noopener noreferrer">Vídeo</a>}{song.audio_url && <a className="underline" href={song.audio_url} target="_blank" rel="noopener noreferrer">Spotify</a>}</span></td></tr>)}</tbody></table></div>
             </div>
             <div id="music-sheets" hidden={musicView !== 'sheets'}>
-            <form onSubmit={(event) => void upload(event)} className="mt-8 border-y border-[#d6dfdc] py-6">
+            {canEdit && <form onSubmit={(event) => void upload(event)} className="mt-8 border-y border-[#d6dfdc] py-6">
               <h2 className="mb-4 text-lg font-medium">Adicionar partitura</h2>
               <datalist id="music-instruments">{['Sax Alto', 'Trompete', 'Trombone', 'Sax Tenor'].map((name) => <option key={name} value={name} />)}</datalist>
               <fieldset disabled={busy} className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -188,10 +189,10 @@ export default function MusicLibrary() {
                 <label className="flex min-w-0 flex-col gap-1 text-sm">PDF (até 20 MB)<input ref={inputRef} className={`${control} w-full file:mr-2 file:cursor-pointer`} type="file" accept="application/pdf,.pdf" required onChange={(event) => setFile(event.target.files?.[0] ?? null)} /></label>
                 <button className={`${command} self-end`} type="submit" disabled={busy || !file || !title.trim()}><Upload size={18} /> Carregar</button>
               </fieldset>
-            </form>
+            </form>}
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4"><h2 className="text-lg font-medium">Biblioteca <span className="text-sm text-[#52625f]">({sheets.length})</span></h2><label className="relative w-full sm:w-72"><Search className="absolute left-3 top-3 text-[#52625f]" size={18} /><input type="search" aria-label="Pesquisar partituras" placeholder="Pesquisar partituras" className={`${control} w-full pl-10`} value={query} onChange={(event) => setQuery(event.target.value)} /></label></div>
-            {!visibleSheets.length ? <p className="py-10 text-[#52625f]">{query ? 'Nenhuma partitura encontrada.' : 'Ainda não há partituras.'}</p> : <ul className="mt-4 divide-y divide-[#d6dfdc]">{visibleSheets.map((sheet) => <li key={sheet.id} className="flex flex-wrap items-center justify-between gap-4 py-4"><div className="flex min-w-0 flex-1 items-center gap-3"><FileMusic size={28} className="shrink-0 text-[#39736b]" /><div className="min-w-0"><button type="button" className="break-words text-left font-medium underline-offset-4 hover:underline" onClick={() => void openSheet(sheet)} disabled={busy}>{sheet.title}</button><p className="break-words text-sm text-[#52625f]">{sheet.instrument || 'Geral'} · {(sheet.file_size / 1024 / 1024).toFixed(1)} MB</p></div></div><div className="flex shrink-0 gap-2"><button type="button" className={command} disabled={busy} title={`Descarregar ${sheet.title}`} aria-label={`Descarregar ${sheet.title}`} onClick={() => void openSheet(sheet, true)}><Download size={18} /></button><button type="button" className={command} disabled={busy} title={`Eliminar ${sheet.title}`} aria-label={`Eliminar ${sheet.title}`} onClick={() => setPendingDelete(sheet)}><Trash2 size={18} /></button></div></li>)}</ul>}
-            <section aria-label="Associar PDFs a músicas" className="mt-6 space-y-5">{visibleSheets.map((sheet) => <div key={`${sheet.id}-${sheet.song_id}-${sheet.instrument}`} className="border-t border-[#d6dfdc] pt-4"><h3 className="mb-2 break-words font-medium">{sheet.title}</h3><SheetAttachment sheet={sheet} songs={songs} busy={busy} onSave={attachSheet} /></div>)}</section>
+            {!visibleSheets.length ? <p className="py-10 text-[#52625f]">{query ? 'Nenhuma partitura encontrada.' : 'Ainda não há partituras.'}</p> : <ul className="mt-4 divide-y divide-[#d6dfdc]">{visibleSheets.map((sheet) => <li key={sheet.id} className="flex flex-wrap items-center justify-between gap-4 py-4"><div className="flex min-w-0 flex-1 items-center gap-3"><FileMusic size={28} className="shrink-0 text-[#39736b]" /><div className="min-w-0"><button type="button" className="break-words text-left font-medium underline-offset-4 hover:underline" onClick={() => void openSheet(sheet)} disabled={busy}>{sheet.title}</button><p className="break-words text-sm text-[#52625f]">{sheet.instrument || 'Geral'} · {(sheet.file_size / 1024 / 1024).toFixed(1)} MB</p></div></div><div className="flex shrink-0 gap-2"><button type="button" className={command} disabled={busy} title={`Descarregar ${sheet.title}`} aria-label={`Descarregar ${sheet.title}`} onClick={() => void openSheet(sheet, true)}><Download size={18} /></button>{canEdit && <button type="button" className={command} disabled={busy} title={`Eliminar ${sheet.title}`} aria-label={`Eliminar ${sheet.title}`} onClick={() => setPendingDelete(sheet)}><Trash2 size={18} /></button>}</div></li>)}</ul>}
+            {canEdit && <section aria-label="Associar PDFs a músicas" className="mt-6 space-y-5">{visibleSheets.map((sheet) => <div key={`${sheet.id}-${sheet.song_id}-${sheet.instrument}`} className="border-t border-[#d6dfdc] pt-4"><h3 className="mb-2 break-words font-medium">{sheet.title}</h3><SheetAttachment sheet={sheet} songs={songs} busy={busy} onSave={attachSheet} /></div>)}</section>}
             {pendingDelete && <div role="alert" className="mt-5 border-l-4 border-red-600 bg-white p-4"><p className="break-words">Eliminar "{pendingDelete.title}" definitivamente?</p><div className="mt-3 flex flex-wrap gap-2"><button type="button" className={command} disabled={busy} onClick={() => void removeSheet()}><Trash2 size={18} /> Eliminar</button><button type="button" className={command} disabled={busy} onClick={() => setPendingDelete(null)}>Cancelar</button></div></div>}
             {viewer && <section aria-label={`PDF: ${viewer.sheet.title}`} className="mt-8 border-t border-[#d6dfdc] pt-4"><div className="mb-3 flex items-center justify-between gap-3"><h2 className="min-w-0 break-words text-lg font-medium">{viewer.sheet.title}</h2><button type="button" className={command} title="Fechar PDF" aria-label="Fechar PDF" onClick={() => setViewer(null)}><X size={18} /></button></div><object data={viewer.url} type="application/pdf" aria-label={viewer.sheet.title} className="h-[70dvh] min-h-80 w-full bg-white"><p className="p-4">Pré-visualização indisponível. <a className="underline" href={viewer.url} target="_blank" rel="noopener noreferrer">Abrir PDF</a></p></object><button type="button" className={`${command} mt-3`} disabled={busy} onClick={() => void openSheet(viewer.sheet)}>Reabrir PDF</button></section>}
             </div>

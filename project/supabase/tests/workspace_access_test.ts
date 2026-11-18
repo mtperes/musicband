@@ -1,5 +1,84 @@
 import { PGlite } from '@electric-sql/pglite';
 
+Deno.test('viewer reads music without writes, usernames resolve privately and passwords stay in Auth', async () => {
+  const db = new PGlite();
+  const admin = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  const viewer = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+  const newMember = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+  const song = '11111111-1111-4111-8111-111111111111';
+  const sheet = '22222222-2222-4222-8222-222222222222';
+  const setlist = '33333333-3333-4333-8333-333333333333';
+  async function denied(sql: string, args: unknown[] = []) {
+    let failed = false;
+    try { await db.query(sql, args); } catch { failed = true; }
+    if (!failed) throw new Error('Expected denied query: ' + sql);
+  }
+  try {
+    await db.exec(`
+      create role anon; create role authenticated; create role service_role bypassrls;
+      create schema auth; create schema storage;
+      create table auth.users (id uuid primary key, email text unique, email_confirmed_at timestamptz);
+      create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+      grant usage on schema auth, storage to authenticated, service_role;
+      create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+      create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text);
+      create function storage.foldername(path text) returns text[] language sql as $$ select string_to_array(path, '/') $$;
+      alter table storage.objects enable row level security;
+      grant select, insert, delete on storage.objects to authenticated;
+    `);
+    for (const migration of ['202611100001_music_library', '202611100002_member_invites', '202611110001_member_profiles', '202611110002_member_active', '202611120001_contact_email', '202611120002_songs_repertoire', '202611120003_setlists', '202611120004_song_sheets', '202611120005_member_roles', '202611130001_member_profile_roles', '202611130002_viewer_role']) {
+      await db.exec(await Deno.readTextFile(new URL(`../migrations/${migration}.sql`, import.meta.url)));
+    }
+    const band = (await db.query<{ id: string }>('select id from public.bands limit 1')).rows[0].id;
+    await db.query('insert into auth.users values ($1, $2, now()), ($3, $4, now()), ($5, $6, now())', [admin, 'mt.peresn@gmail.com', viewer, 'reader@example.com', newMember, 'new@example.com']);
+    await db.query('insert into public.band_members (band_id, user_id, roles) values ($1, $2, $3), ($1, $4, $5)', [band, admin, ['owner', 'admin'], viewer, ['viewer']]);
+    await db.query('insert into public.member_profiles (band_id, email, name) values ($1, $2, $3)', [band, 'reader@example.com', 'Reader']);
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611130003_member_usernames.sql', import.meta.url)));
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611130004_member_identity_listing.sql', import.meta.url)));
+    await db.query("update public.member_profiles set username = 'reader.one' where email = 'reader@example.com'");
+    const identityRoster = await db.query<{ username: string; email: string }>('select * from public.list_workspace_members($1, $2, 0)', [band, admin]);
+    if (!identityRoster.rows.some(member => member.username === 'reader.one' && member.email === 'reader@example.com')) throw new Error('Member identity listing lost separate email or username');
+    await db.query('insert into public.songs (id, band_id, title) values ($1, $2, $3)', [song, band, 'Viewer song']);
+    await db.query('insert into public.song_parts values ($1, $2, $3)', [song, 'Sax Alto', 'https://example.com/score']);
+    await db.query('insert into public.music_sheets (id, band_id, title, instrument, file_name, file_size, storage_path, uploaded_by) values ($1, $2, $3, $4, $5, 100, $6, $7)', [sheet, band, 'Read-only score', 'Sax Alto', 'score.pdf', `${band}/${sheet}.pdf`, admin]);
+    await db.query("insert into storage.objects (bucket_id, name) values ('music-sheets', $1)", [`${band}/${sheet}.pdf`]);
+    await db.query('insert into public.setlists (id, band_id, title) values ($1, $2, $3)', [setlist, band, 'Viewer setlist']);
+    await db.query('insert into public.setlist_songs values ($1, $2, $3, 1)', [setlist, band, song]);
+    if ((await db.query("select column_name from information_schema.columns where table_schema = 'public' and table_name in ('member_profiles', 'band_members') and column_name like '%password%'")).rows.length) throw new Error('Password stored in a public member table');
+    await db.exec('set role service_role');
+    const login = await db.query<{ email: string }>('select public.resolve_workspace_login($1) as email', ['reader.one']);
+    if (login.rows[0].email !== 'reader@example.com') throw new Error('Separate username did not resolve Auth email');
+    await db.query('select public.provision_workspace_member($1, $2, $3, $4)', [band, newMember, admin, ['viewer']]);
+    await db.exec('reset role; set role anon');
+    await denied('select public.resolve_workspace_login($1)', ['reader.one']);
+    await db.exec('reset role; set role authenticated');
+    await db.query("select set_config('request.jwt.claim.sub', $1, false)", [viewer]);
+    for (const table of ['songs', 'song_parts', 'music_sheets', 'setlists', 'setlist_songs', 'storage.objects']) {
+      if ((await db.query(`select * from ${table}`)).rows.length !== 1) throw new Error('Viewer cannot read ' + table);
+    }
+    if ((await db.query('select * from public.member_profiles')).rows.length) throw new Error('Viewer read private member data');
+    await denied('select public.resolve_workspace_login($1)', ['reader.one']);
+    await denied('select public.save_setlist($1, $2, $3, $4)', [band, setlist, 'Forbidden', [song]]);
+    await denied('select public.provision_workspace_member($1, $2, $3, $4)', [band, newMember, admin, ['admin']]);
+    await denied('select public.set_workspace_member_roles($1, $2, $3, $4)', [band, viewer, admin, ['admin']]);
+    await denied('select public.update_workspace_member_roles($1, $2, $3)', [band, viewer, ['admin']]);
+    await denied("insert into storage.objects (bucket_id, name) values ('music-sheets', $1)", [`${band}/${newMember}.pdf`]);
+    await denied('insert into public.music_sheets (band_id, title, file_name, file_size, storage_path, uploaded_by) values ($1, $2, $3, 100, $4, $5)', [band, 'Forbidden', 'score.pdf', `${band}/${newMember}.pdf`, viewer]);
+    if ((await db.query('update public.music_sheets set song_id = $1 where id = $2 returning id', [song, sheet])).rows.length) throw new Error('Viewer associated a score');
+    for (const table of ['music_sheets', 'setlists', 'storage.objects']) {
+      if ((await db.query(`delete from ${table} returning *`)).rows.length) throw new Error('Viewer deleted from ' + table);
+    }
+    await db.exec('reset role');
+    await db.query('update public.band_members set roles = $1 where band_id = $2 and user_id = $3', [['viewer', 'musician'], band, viewer]);
+    await db.exec('set role authenticated');
+    if (!(await db.query<{ allowed: boolean }>('select public.can_edit_music($1) as allowed', [band])).rows[0].allowed) throw new Error('Additive musician role lost editing access');
+    await db.exec('reset role');
+    await db.query('update public.band_members set active = false where band_id = $1 and user_id = $2', [band, viewer]);
+    await db.exec('set role authenticated');
+    if ((await db.query('select * from public.music_sheets')).rows.length) throw new Error('Inactive viewer retained music access');
+  } finally { await db.close(); }
+});
+
 Deno.test('migrations enforce private music and service-only administration', async () => {
   const db = new PGlite();
   const admin = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -32,6 +111,8 @@ Deno.test('migrations enforce private music and service-only administration', as
     await db.exec(await Deno.readTextFile(new URL('../migrations/202611100002_member_invites.sql', import.meta.url)));
     await db.exec(await Deno.readTextFile(new URL('../migrations/202611110001_member_profiles.sql', import.meta.url)));
     await db.exec(await Deno.readTextFile(new URL('../migrations/202611110002_member_active.sql', import.meta.url)));
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611120005_member_roles.sql', import.meta.url)));
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611130001_member_profile_roles.sql', import.meta.url)));
     await db.exec(await Deno.readTextFile(new URL('../migrations/202611120001_contact_email.sql', import.meta.url)));
     await db.query('insert into auth.users values ($1, $2, now()), ($3, $4, now()), ($5, $6, now()), ($7, $8, now())',
       [admin, 'mt.peresn@gmail.com', musician, 'musician@example.com', outsider, 'outsider@example.com', finance, 'finance@example.com']);
@@ -114,6 +195,16 @@ Deno.test('migrations enforce private music and service-only administration', as
     if (cappedContact[0].allowed) throw new Error('Daily contact send cap was bypassed');
     const { rows: roster } = await db.query<{ email: string; user_id: string | null; name: string | null }>('select * from public.list_workspace_members($1, $2, 0)', [firstBand, admin]);
     if (roster.length !== 6 || roster.filter((member) => member.email === 'mt.peresn@gmail.com').length !== 1 || roster.filter((member) => member.user_id === null).length !== 3) throw new Error('Member profiles did not join account list correctly');
+    const profileOnly = roster.find((member) => member.user_id === null)!;
+    await db.query('update public.member_profiles set roles = $1 where band_id = $2 and email = $3', [['musician', 'production'], firstBand, profileOnly.email]);
+    await denied('update public.member_profiles set roles = $1 where band_id = $2 and email = $3', [['invalid'], firstBand, profileOnly.email]);
+    await denied('update public.member_profiles set roles = $1 where band_id = $2 and email = $3', [[null], firstBand, profileOnly.email]);
+    const { rows: taggedRoster } = await db.query<{ email: string; user_id: string | null; roles: string[]; active: boolean }>('select * from public.list_workspace_members($1, $2, 0)', [firstBand, admin]);
+    const tagged = taggedRoster.find((member) => member.email === profileOnly.email)!;
+    if (JSON.stringify(tagged.roles) !== JSON.stringify(['musician', 'production']) || tagged.user_id !== null || tagged.active) throw new Error('Profile role tags were lost or granted account access');
+    await db.query('select public.set_workspace_member_roles($1, $2, $3, $4)', [firstBand, musician, admin, ['musician', 'production', 'receive_mail']]);
+    const { rows: multiRole } = await db.query<{ roles: string[] }>('select roles from public.band_members where band_id = $1 and user_id = $2', [firstBand, musician]);
+    if (!multiRole[0].roles.includes('musician') || !multiRole[0].roles.includes('production')) throw new Error('Account role tags were treated as an exclusive selection');
     await db.exec('reset role; set role authenticated');
     await db.query("select set_config('request.jwt.claim.sub', $1, false)", [admin]);
     if ((await db.query('select * from public.member_profiles')).rows.length !== 4) throw new Error('Admin cannot read imported profiles');

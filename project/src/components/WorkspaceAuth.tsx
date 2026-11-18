@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState, type FormEvent, type ReactNode } from 'r
 import type { Session } from '@supabase/supabase-js';
 import { LogIn, LogOut, RefreshCw } from 'lucide-react';
 import { supabase } from '../utils/supabase';
-import { workspaceEmail, workspaceUsername } from '../utils/workspaceIdentity';
+import { workspaceUsername } from '../utils/workspaceIdentity';
 import { WorkspaceAuthContext, useWorkspaceAuth, type Membership } from '../hooks/useWorkspaceAuth';
 
 const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded border border-[#bdcfca] bg-white px-3 py-2 text-sm text-[#182628] hover:bg-[#e6efec] disabled:opacity-50';
@@ -93,13 +93,12 @@ export function WorkspaceGuard({ admin = false, children }: { admin?: boolean; c
     setBusy(true);
     setLoginError('');
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: workspaceEmail(username),
-        password,
-      });
-      if (signInError) setLoginError(signInError.status === 429 ? 'Demasiados pedidos. Aguarde antes de tentar novamente.' : 'Utilizador ou palavra-passe inválidos. Contacte o administrador se não tiver acesso.');
-      else setPassword('');
-    } catch (signInError) { setLoginError(signInError instanceof Error && signInError.message === 'Utilizador inválido.' ? signInError.message : 'Ligação indisponível. Tente novamente.'); }
+      const { data, error: loginError } = await supabase.functions.invoke('workspace-members', { body: { action: 'sign_in', username: username.trim().toLowerCase(), password } });
+      if (loginError || !data?.session) throw new Error('Utilizador ou palavra-passe inválidos.');
+      const { error: sessionError } = await supabase.auth.setSession(data.session);
+      if (sessionError) throw sessionError;
+      setPassword('');
+    } catch (signInError) { setLoginError(signInError instanceof Error && signInError.message === 'Utilizador ou palavra-passe inválidos.' ? signInError.message : 'Não foi possível iniciar sessão. Verifique o utilizador, a palavra-passe e a ligação.'); }
     finally { setBusy(false); }
   }
 
@@ -108,13 +107,13 @@ export function WorkspaceGuard({ admin = false, children }: { admin?: boolean; c
   if (!session) return <section className="mt-8 border-y border-[#d6dfdc] py-8" aria-labelledby="login-heading">
     <h1 id="login-heading" className="text-2xl font-semibold">Área de membros</h1>
     <form className="mt-5 flex max-w-md flex-col gap-3" onSubmit={(event) => void signIn(event)}>
-      <label className="flex flex-col gap-1 text-sm">Utilizador<input type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required maxLength={254} value={username} disabled={busy} onChange={(event) => setUsername(event.target.value)} className="min-h-11 rounded border border-[#bdcfca] bg-white px-3 py-2 text-[#182628]" /></label>
+      <label className="flex flex-col gap-1 text-sm">Utilizador<input type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required minLength={3} maxLength={64} pattern="[a-zA-Z0-9][a-zA-Z0-9._\-]{2,63}" value={username} disabled={busy} onChange={(event) => setUsername(event.target.value)} className="min-h-11 rounded border border-[#bdcfca] bg-white px-3 py-2 text-[#182628]" /></label>
       <label className="flex flex-col gap-1 text-sm">Palavra-passe<input type="password" autoComplete="current-password" required value={password} disabled={busy} onChange={(event) => setPassword(event.target.value)} className="min-h-11 rounded border border-[#bdcfca] bg-white px-3 py-2 text-[#182628]" /></label>
       <button type="submit" className={`${button} self-start`} disabled={busy}><LogIn size={18} />{busy ? 'A entrar...' : 'Entrar'}</button>
     </form>
     {(loginError || error) && <p role="alert" className="mt-4 text-sm text-red-800">{loginError || error}</p>}
   </section>;
-  const roles = admin ? ['owner', 'admin'] : ['owner', 'admin', 'musician'];
+  const roles = admin ? ['owner', 'admin'] : ['owner', 'admin', 'musician', 'viewer'];
   if (error || !memberships.some((member) => member.roles.some((role) => roles.includes(role)))) return <section className="py-8">
     <h1 className="text-2xl font-semibold">{admin ? 'Administração' : 'Partituras'}</h1>
     <p role={error ? 'alert' : 'status'} className="mt-4 text-[#52625f]">{error ? `Não foi possível verificar o acesso: ${error}` : 'A sua conta não tem acesso a esta área. Contacte o administrador.'}</p>

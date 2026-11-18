@@ -72,6 +72,25 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/music');
 });
 
+test('viewer reads every music tab without member administration or editing controls', async ({ page }) => {
+  await page.unrouteAll({ behavior: 'wait' });
+  await page.route('**/src/utils/supabase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: mockModule.replace("roles: ['musician']", "roles: ['viewer']") }));
+  await page.goto('/music');
+  await expect(page.getByRole('link', { name: 'Admin', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Tocar setlist', exact: true })).toBeVisible();
+  for (const name of ['Nova setlist', 'Editar setlist', 'Eliminar setlist']) await expect(page.getByRole('button', { name, exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Repertório', exact: true }).click();
+  await expect(page.getByRole('searchbox', { name: 'Pesquisar repertório' })).toBeVisible();
+  await page.getByRole('button', { name: 'PDFs', exact: true }).click();
+  await expect(page.getByRole('searchbox', { name: 'Pesquisar partituras' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Carregar', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Eliminar / })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Associar PDFs a músicas' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Setlists', exact: true }).click();
+  await page.getByRole('button', { name: 'Tocar setlist', exact: true }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+});
+
 test('stage reader renders scores, navigates, resumes and recovers', async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));

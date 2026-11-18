@@ -10,7 +10,7 @@ const control = 'min-h-11 rounded border border-[#bdcfca] bg-white px-3 py-2 tex
 const command = `${control} inline-flex items-center justify-center gap-2 hover:bg-[#e6efec]`;
 const PerformanceReader = lazy(() => import('./PerformanceReader'));
 
-export default function Setlists({ bandId, songs, sheets, songsLoading }: { bandId: string; songs: RepertoireSong[]; sheets: MusicSheet[]; songsLoading: boolean }) {
+export default function Setlists({ bandId, songs, sheets, songsLoading, canEdit }: { bandId: string; songs: RepertoireSong[]; sheets: MusicSheet[]; songsLoading: boolean; canEdit: boolean }) {
   const [setlists, setSetlists] = useState<Setlist[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [instrument, setInstrument] = useState('');
@@ -43,7 +43,7 @@ export default function Setlists({ bandId, songs, sheets, songsLoading }: { band
   }, [bandId, reload]);
 
   function editSetlist() {
-    if (!selected) return;
+    if (!selected || !canEdit) return;
     setDraft({ id: selected.id, title: selected.title, songIds: entries.map((entry) => entry.song_id) });
     setPendingDelete(false);
     setQuery('');
@@ -62,7 +62,7 @@ export default function Setlists({ bandId, songs, sheets, songsLoading }: { band
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase || !draft || busy) return;
+    if (!supabase || !canEdit || !draft || busy) return;
     setBusy(true);
     setError('');
     try {
@@ -79,7 +79,7 @@ export default function Setlists({ bandId, songs, sheets, songsLoading }: { band
   }
 
   async function remove() {
-    if (!supabase || !selected || busy) return;
+    if (!supabase || !canEdit || !selected || busy) return;
     setBusy(true);
     setError('');
     try {
@@ -98,7 +98,7 @@ export default function Setlists({ bandId, songs, sheets, songsLoading }: { band
     <section aria-labelledby="setlists-heading" className="mt-6 min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="setlists-heading" className="flex items-center gap-2 text-lg font-medium"><ListMusic size={22} /> Setlists</h2>
-        {!draft && <button type="button" className={command} disabled={loading || busy || songsLoading} onClick={() => { setDraft({ id: null, title: '', songIds: [] }); setQuery(''); setPendingDelete(false); }}><Plus size={18} /> Nova setlist</button>}
+        {canEdit && !draft && <button type="button" className={command} disabled={loading || busy || songsLoading} onClick={() => { setDraft({ id: null, title: '', songIds: [] }); setQuery(''); setPendingDelete(false); }}><Plus size={18} /> Nova setlist</button>}
       </div>
       {error && <div role="alert" className="mt-4 flex items-start justify-between gap-3 border-l-4 border-red-600 bg-red-50 p-4 text-sm text-red-900"><span className="min-w-0 break-words">{error}</span><button type="button" aria-label="Fechar erro de setlist" title="Fechar erro" onClick={() => setError('')}><X size={18} /></button></div>}
       {loading || songsLoading ? <p role="status" className="py-8">A carregar setlists...</p> : error && !setlists.length && !draft ? <button type="button" className={`${command} mt-4`} onClick={() => setReload((value) => value + 1)}>Tentar novamente</button> : draft ? (
@@ -126,8 +126,8 @@ export default function Setlists({ bandId, songs, sheets, songsLoading }: { band
         <div className="mt-4 flex flex-wrap items-end gap-3">
           <label className="flex min-w-0 flex-1 basis-full flex-col gap-1 text-sm sm:basis-72">Setlist<select className={`${control} w-full min-w-0`} value={selected.id} disabled={busy} onChange={(event) => { setSelectedId(event.target.value); setPendingDelete(false); }}>{setlists.map((setlist) => <option key={setlist.id} value={setlist.id}>{setlist.title}</option>)}</select></label>
           <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm sm:max-w-52">Instrumento<select className={`${control} w-full`} value={instrument} onChange={(event) => setInstrument(event.target.value)}><option value="">Todos</option>{instruments.map((name) => <option key={name}>{name}</option>)}</select></label>
-          <button type="button" className={command} title="Editar setlist" aria-label="Editar setlist" disabled={busy} onClick={editSetlist}><Pencil size={18} /></button>
-          <button type="button" className={command} title="Eliminar setlist" aria-label="Eliminar setlist" disabled={busy} onClick={() => setPendingDelete(true)}><Trash2 size={18} /></button>
+          {canEdit && <button type="button" className={command} title="Editar setlist" aria-label="Editar setlist" disabled={busy} onClick={editSetlist}><Pencil size={18} /></button>}
+          {canEdit && <button type="button" className={command} title="Eliminar setlist" aria-label="Eliminar setlist" disabled={busy} onClick={() => setPendingDelete(true)}><Trash2 size={18} /></button>}
           <button type="button" className={`${command} font-medium`} disabled={!entries.length} onClick={() => setPlaying(true)}><Play size={18} /> Tocar setlist</button>
         </div>
         {pendingDelete && <div role="alert" className="mt-4 border-l-4 border-red-600 bg-white p-4"><p className="break-words">Eliminar "{selected.title}"? As músicas permanecem no repertório.</p><div className="mt-3 flex flex-wrap gap-2"><button type="button" className={command} disabled={busy} onClick={() => void remove()}><Trash2 size={18} /> Eliminar</button><button type="button" className={command} disabled={busy} onClick={() => setPendingDelete(false)}>Cancelar</button></div></div>}
