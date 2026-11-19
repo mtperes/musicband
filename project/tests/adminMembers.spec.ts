@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 const mockModule = `
 const session = { user: { id: 'admin', email: 'admin@example.com' } };
 const members = [
-  { user_id: 'member', profile_id: 'profile', email: 'member@example.com', name: 'Ana', phone: '12345', roles: ['musician'], active: true, confirmed: true },
+  { user_id: 'member', profile_id: 'profile', email: 'member@example.com', name: 'Ana', phone: '12345', roles: ['musician'], active: true, confirmed: true, last_sign_in_at: '2026-11-18T14:30:00.000Z' },
   { user_id: null, profile_id: 'no-account', email: 'profile@example.com', name: 'Bruno', roles: [], active: false, confirmed: false },
 ];
 globalThis.__memberTest = { commands: [], fail: false };
@@ -33,6 +33,10 @@ test.beforeEach(async ({ page }) => {
 test('table edit opens a populated form and saves roles, profile and optional password', async ({ page }) => {
   const table = page.getByRole('table', { name: 'Membros aprovados' });
   await expect(table.getByRole('columnheader', { name: 'Funções' })).toHaveCount(0);
+  await expect(table.getByRole('columnheader', { name: 'Último acesso' })).toBeVisible();
+  const expectedLogin = await page.evaluate(() => new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date('2026-11-18T14:30:00.000Z')));
+  await expect(table.getByRole('row').nth(1).getByRole('cell').nth(6)).toHaveText(expectedLogin);
+  await expect(table.getByRole('row').nth(2).getByRole('cell').nth(6)).toHaveText('-');
   await page.getByRole('button', { name: 'Editar membro: Ana', exact: true }).click();
   const form = page.getByRole('form', { name: 'Editar membro' });
   await expect(form.getByLabel('Nome', { exact: true })).toHaveValue('Ana');

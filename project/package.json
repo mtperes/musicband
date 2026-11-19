@@ -26,6 +26,7 @@
     "framer-motion": "^12.40.0",
     "ical.js": "^2.2.1",
     "lucide-react": "^1.71.0",
+    "pitchy": "^4.1.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-pdf": "^11.0.0",

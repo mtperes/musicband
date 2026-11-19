@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import MusicLibrary from './MusicLibrary';
 import AdminMembers from './AdminMembers';
@@ -6,9 +6,12 @@ import { WorkspaceAccount, WorkspaceAuthProvider, WorkspaceGuard } from './Works
 import { useWorkspaceAuth } from '../hooks/useWorkspaceAuth';
 import './WorkspacePortals.css';
 
+const MusicTools = lazy(() => import('./MusicTools'));
+
 const workspaceLinks = [
   { to: '/admin', label: 'Admin' },
   { to: '/music', label: 'Música' },
+  { to: '/tools', label: 'Ferramentas' },
 ];
 
 function WorkspaceLayout({
@@ -24,8 +27,21 @@ function WorkspaceLayout({
     <div className="workspace min-h-screen bg-[#f3f6f5] text-[#182628]">
       <header className="border-b border-[#d6dfdc] bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link to="/" className="font-(family-name:--font0family) text-xl text-[#1f4644]">
-            Collective
+          <Link
+            to="/"
+            aria-label="Collective"
+            className="inline-flex items-center font-(family-name:--font0family) text-xl leading-none text-[#1f4644]"
+          >
+            <span aria-hidden="true">Co</span>
+            <span
+              aria-hidden="true"
+              className="mx-[0.04em] inline-block h-[1.35em] w-[1.18em] bg-current"
+              style={{
+                mask: 'url(/brand/collective-mark.svg) center / contain no-repeat',
+                WebkitMask: 'url(/brand/collective-mark.svg) center / contain no-repeat',
+              }}
+            />
+            <span aria-hidden="true">ective</span>
           </Link>
           <nav aria-label="Áreas da plataforma" className="flex items-center gap-2">
             {workspaceLinks.filter((item) => item.to !== '/admin' || canAdmin).map((item) => (
@@ -103,6 +119,18 @@ export function MusicPortal() {
       <MusicLibrary />
       </WorkspaceGuard>
     </WorkspaceLayout>
+    </WorkspaceAuthProvider>
+  );
+}
+
+export function ToolsPortal() {
+  return (
+    <WorkspaceAuthProvider>
+      <WorkspaceLayout activePath="Ferramentas">
+        <WorkspaceGuard>
+          <Suspense fallback={<p role="status">A carregar instrumentos...</p>}><MusicTools /></Suspense>
+        </WorkspaceGuard>
+      </WorkspaceLayout>
     </WorkspaceAuthProvider>
   );
 }

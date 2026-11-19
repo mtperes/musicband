@@ -21,6 +21,9 @@ const MusicPortal = lazy(() =>
   import('./components/WorkspacePortals').then(({ MusicPortal }) => ({ default: MusicPortal })),
 );
 const AuthConfirm = lazy(() => import('./components/AuthConfirm'));
+const ToolsPortal = lazy(() =>
+  import('./components/WorkspacePortals').then(({ ToolsPortal }) => ({ default: ToolsPortal })),
+);
 
 function App() {
   return (
@@ -31,6 +34,7 @@ function App() {
         <Route path="/auth/confirm" element={<Suspense fallback={<p className="p-6" role="status">A confirmar acesso...</p>}><AuthConfirm /></Suspense>} />
         <Route path="/admin/*" element={<Suspense fallback={<p className="p-6" role="status">A carregar...</p>}><AdminPortal /></Suspense>} />
         <Route path="/music/*" element={<Suspense fallback={<p className="p-6" role="status">A carregar...</p>}><MusicPortal /></Suspense>} />
+        <Route path="/tools" element={<Suspense fallback={<p className="p-6" role="status">A carregar...</p>}><ToolsPortal /></Suspense>} />
         <Route path="/band" element={<Navigate to="/music" replace />} />
         <Route path="/band/*" element={<Navigate to="/music" replace />} />
         <Route path="*" element={<NotFound />} />

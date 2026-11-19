@@ -44,19 +44,29 @@ Deno.test('viewer reads music without writes, usernames resolve privately and pa
     await db.query("insert into storage.objects (bucket_id, name) values ('music-sheets', $1)", [`${band}/${sheet}.pdf`]);
     await db.query('insert into public.setlists (id, band_id, title) values ($1, $2, $3)', [setlist, band, 'Viewer setlist']);
     await db.query('insert into public.setlist_songs values ($1, $2, $3, 1)', [setlist, band, song]);
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611190001_rhythm_presets.sql', import.meta.url)));
+    await db.query("update public.songs set rhythm = 'Samba' where id = $1", [song]);
+    const pattern = JSON.stringify({ pulse: [true, true, true, true], kick: [false, false, false, false], snare: [false, false, false, false], hat: [false, false, false, false] });
+    await db.exec('set role authenticated');
+    await db.query("select set_config('request.jwt.claim.sub', $1, false)", [admin]);
+    await db.query("insert into public.rhythm_presets (band_id, rhythm, bpm, beats, subdivision, volume, kit, drums, pattern) values ($1, 'Samba', 100, 4, 1, 0.5, 'wood', false, $2)", [band, pattern]);
+    await db.exec('reset role');
     if ((await db.query("select column_name from information_schema.columns where table_schema = 'public' and table_name in ('member_profiles', 'band_members') and column_name like '%password%'")).rows.length) throw new Error('Password stored in a public member table');
     await db.exec('set role service_role');
     const login = await db.query<{ email: string }>('select public.resolve_workspace_login($1) as email', ['reader.one']);
     if (login.rows[0].email !== 'reader@example.com') throw new Error('Separate username did not resolve Auth email');
     await db.query('select public.provision_workspace_member($1, $2, $3, $4)', [band, newMember, admin, ['viewer']]);
     await db.exec('reset role; set role anon');
+    await denied('select * from public.rhythm_presets');
     await denied('select public.resolve_workspace_login($1)', ['reader.one']);
     await db.exec('reset role; set role authenticated');
     await db.query("select set_config('request.jwt.claim.sub', $1, false)", [viewer]);
-    for (const table of ['songs', 'song_parts', 'music_sheets', 'setlists', 'setlist_songs', 'storage.objects']) {
+    for (const table of ['songs', 'song_parts', 'music_sheets', 'setlists', 'setlist_songs', 'storage.objects', 'rhythm_presets']) {
       if ((await db.query(`select * from ${table}`)).rows.length !== 1) throw new Error('Viewer cannot read ' + table);
     }
     if ((await db.query('select * from public.member_profiles')).rows.length) throw new Error('Viewer read private member data');
+    if ((await db.query('update public.rhythm_presets set bpm = 120 returning *')).rows.length) throw new Error('Viewer changed shared rhythm');
+    await denied("insert into public.rhythm_presets (band_id, rhythm, bpm, beats, subdivision, volume, kit, drums, pattern) values ($1, 'Samba', 120, 4, 1, 0.5, 'wood', false, $2)", [band, pattern]);
     await denied('select public.resolve_workspace_login($1)', ['reader.one']);
     await denied('select public.save_setlist($1, $2, $3, $4)', [band, setlist, 'Forbidden', [song]]);
     await denied('select public.provision_workspace_member($1, $2, $3, $4)', [band, newMember, admin, ['admin']]);
@@ -72,10 +82,16 @@ Deno.test('viewer reads music without writes, usernames resolve privately and pa
     await db.query('update public.band_members set roles = $1 where band_id = $2 and user_id = $3', [['viewer', 'musician'], band, viewer]);
     await db.exec('set role authenticated');
     if (!(await db.query<{ allowed: boolean }>('select public.can_edit_music($1) as allowed', [band])).rows[0].allowed) throw new Error('Additive musician role lost editing access');
+    const updatedRhythms = await db.query<{ bpm: number }>("insert into public.rhythm_presets (band_id, rhythm, bpm, beats, subdivision, volume, kit, drums, pattern) values ($1, 'Samba', 128, 4, 1, 0.5, 'wood', false, $2) on conflict (band_id, rhythm) do update set bpm = excluded.bpm returning bpm", [band, pattern]);
+    if (updatedRhythms.rows[0]?.bpm !== 128) throw new Error('Musician could not consolidate rhythm configuration');
+    await denied('update public.rhythm_presets set bpm = 300');
+    await denied("update public.rhythm_presets set pattern = jsonb_set(pattern, '{kick}', '[true]'::jsonb)");
+    await denied("update public.rhythm_presets set pattern = jsonb_set(pattern, '{kick}', '[true, false, 1, false]'::jsonb)");
     await db.exec('reset role');
     await db.query('update public.band_members set active = false where band_id = $1 and user_id = $2', [band, viewer]);
     await db.exec('set role authenticated');
     if ((await db.query('select * from public.music_sheets')).rows.length) throw new Error('Inactive viewer retained music access');
+    if ((await db.query('select * from public.rhythm_presets')).rows.length) throw new Error('Inactive member retained rhythm access');
   } finally { await db.close(); }
 });
 
