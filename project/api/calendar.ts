@@ -1,3 +1,3 @@
-import { createNodeCalendarHandler } from '../server/calendar.ts';
+import { createNodeCalendarHandler } from '../server/calendar';
 
 export default createNodeCalendarHandler();

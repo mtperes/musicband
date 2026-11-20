@@ -1,4 +1,4 @@
-import { contactSettings, createNodeContactHandler } from '../server/contact.ts';
+import { contactSettings, createNodeContactHandler } from '../server/contact';
 
 export default createNodeContactHandler(contactSettings(
   process.env,

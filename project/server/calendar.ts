@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { defaultCalendarUrl, publicCalendarUrl } from '../src/utils/calendarSource.ts';
+import { defaultCalendarUrl, publicCalendarUrl } from '../src/utils/calendarSource';
 
 export function createCalendarHandler(fetcher: typeof fetch = fetch) {
   return async (request: Request): Promise<Response> => {
