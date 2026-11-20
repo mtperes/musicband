@@ -13,6 +13,7 @@
     "test:music": "node --experimental-strip-types --test tests/musicPerformance.test.ts",
     "test:music:browser": "playwright test",
     "setup:admin": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/setup-admin.mjs",
+    "setup:site": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/import-site-assets.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -2,8 +2,10 @@ import React, { useState, type FormEvent } from 'react';
 import { Send } from 'lucide-react';
 import SectionTilte from './sectionTitle';
 import { TextFade } from '../effects/TextFade';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 const Contact: React.FC = () => {
+    const section = useSiteContent().sections.contact;
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
@@ -33,14 +35,14 @@ const Contact: React.FC = () => {
 
     return (
         <section className='h-auto flex flex-col bg-sky-500/35 rounded-4xl pt-0 pb-10' id='contact' aria-labelledby='contact-heading'>
-            <SectionTilte titleText="Contato" id="contact-heading" />
+            <SectionTilte titleText={section.title} id="contact-heading" />
 
             <div className='mx-auto my-10 flex w-full max-w-6xl flex-col gap-8 px-4 lg:flex-row lg:items-start'>
               
                 <div className='flex-1/3 text-center lg:text-right flex flex-col mx-10 justify-center'>
                     <TextFade direction="up">
-                    <h3 className='mb-7 text-xl font-bold leading-tight md:text-2xl lg:text-3xl'>Quer trazer a energia contagiante da Sardinhas Nômades para o seu evento?</h3>
-                    <p className='mb-4 text-base font-(family-name:--font1family) sm:text-lg md:text-xl'>Está ansioso para sentir a batida eletrizante do carnaval brasileiro em Lisboa? Então, entre em contato conosco! Adoramos conhecer novos fãs, fechar parcerias incríveis e levar a nossa festa irreverente para todos os cantos. Preencha o formulário abaixo, mande um e-mail ou nos siga nas redes sociais. Vamos juntos fazer a cidade vibrar com muita música e alegria!</p>
+                    <h3 className='mb-7 text-xl font-bold leading-tight md:text-2xl lg:text-3xl'>{section.subtitle}</h3>
+                    <p className='mb-4 whitespace-pre-line text-base font-(family-name:--font1family) sm:text-lg md:text-xl'>{section.text}</p>
                     </TextFade>
                 </div>
                                     <form className='flex-1/3 lg:mt-10 mb-10 min-w-0 text-left' autoComplete="on" onSubmit={(event) => void submit(event)}>

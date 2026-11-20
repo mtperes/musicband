@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from "react";
 
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import videoSrc from "../assets/banner-video.mp4";
+import { useSiteContent } from '../hooks/useSiteContent';
 
 
 const Banner: React.FC = () => {
+  const { sections } = useSiteContent();
+  const section = sections.home;
+  const asset = section.media[0];
   const prefersReducedMotion = useReducedMotion() ?? false;
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -19,7 +22,7 @@ const Banner: React.FC = () => {
     playBanner();
     document.addEventListener("visibilitychange", playBanner);
     return () => document.removeEventListener("visibilitychange", playBanner);
-  }, []);
+  }, [asset?.url]);
 
   const targetRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -46,10 +49,10 @@ const Banner: React.FC = () => {
           }}
           ref={targetRef}
         >
-          <video
+          {asset && /\.(mp4|webm)(?:\?|$)/i.test(asset.url) ? <video
             ref={videoRef}
             className="banner-video h-full w-full object-cover"
-            src={videoSrc}
+            src={asset.url}
             poster="/events/events1.jpg"
             autoPlay
             loop
@@ -58,8 +61,9 @@ const Banner: React.FC = () => {
             preload="auto"
             aria-hidden="true"
             tabIndex={-1}
-          />
+          /> : asset ? <img src={asset.url} alt={asset.alt} className="h-full w-full object-cover" fetchPriority="high" /> : null}
         </motion.div>
+        {section.text && <div className="absolute inset-x-0 bottom-12 z-10 mx-auto max-w-4xl px-6 text-center"><h2>{section.title}</h2><p className="whitespace-pre-line">{section.text}</p></div>}
       </div>
     </section>
   );

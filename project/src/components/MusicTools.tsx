@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { AudioLines, CircleCheck, Drum, Hand, Mic, MicOff, Minus, Play, Plus, Square, Volume2, VolumeX } from 'lucide-react';
+import { CircleCheck, Drum, Hand, Mic, MicOff, Minus, Play, Plus, Square, Volume2, VolumeX } from 'lucide-react';
 import { PitchDetector } from 'pitchy';
 import { createPattern, DrumTransport, drumTracks, tuningFromFrequency, type DrumKit, type DrumTrack, type RhythmConfig } from '../utils/musicTools';
 import RhythmPresets from './RhythmPresets';
@@ -159,7 +159,6 @@ export default function MusicTools() {
 
   return (
     <div className="music-tools">
-      <div className="tools-heading"><h1>Ferramentas</h1><AudioLines size={32} aria-hidden="true" /></div>
       <div className="tools-instruments">
         <section className="tools-tuner" aria-labelledby="tuner-title">
           <div className="instrument-heading"><h2 id="tuner-title"><Mic size={20} /> Afinador</h2><span className={`instrument-light ${listening ? 'is-on' : ''}`} aria-hidden="true" /></div>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&display=swap');
+
 .workspace {
   font-family: "Rubik", sans-serif;
   text-align: left;
@@ -49,4 +51,135 @@
 
 .workspace a {
   color: inherit;
+}
+
+.workspace-nav-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  color: #182628;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.workspace-nav-link svg {
+  color: var(--workspace-accent);
+}
+
+.workspace-nav-link::after {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0;
+  left: 0.65rem;
+  height: 2px;
+  background: var(--workspace-accent);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms ease;
+}
+
+.workspace-nav-link:hover::after,
+.workspace-nav-link.is-active::after {
+  transform: scaleX(1);
+}
+
+.workspace-nav-link.is-active {
+  font-weight: 600;
+}
+
+.workspace-site-link {
+  color: #435552;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.workspace-page-title {
+  margin: 0;
+  color: #111827;
+  font-family: "League Spartan", sans-serif !important;
+  font-size: 1.75rem !important;
+  font-weight: 700;
+  line-height: 1.1 !important;
+}
+
+.workspace-page-header {
+  min-height: 2.5rem;
+}
+
+.workspace-nav-link:focus-visible,
+.workspace-site-link:focus-visible {
+  outline: 2px solid #536e67;
+  outline-offset: 3px;
+}
+
+.workspace-account {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.workspace-account-details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.workspace-account-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.workspace-role-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #52625f;
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.workspace-role-label svg {
+  color: #39736b;
+}
+
+@media (max-width: 520px) {
+  .workspace-header-inner {
+    align-items: flex-start;
+  }
+
+  .workspace-nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .workspace-page-header {
+    align-items: flex-start;
+    column-gap: 0.5rem;
+  }
+
+  .workspace-page-title {
+    gap: 0.45rem !important;
+    font-size: 1.25rem !important;
+  }
+
+  .workspace-page-title svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-nav-link,
+  .workspace-nav-link::after {
+    transition: none;
+  }
 }

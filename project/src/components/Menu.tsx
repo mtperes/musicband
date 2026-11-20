@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSiteContent } from '../hooks/useSiteContent';
 import {
   AnimatePresence,
   motion,
@@ -14,17 +15,16 @@ function scrollTo(target: string) {
   }
 }
 
-const ITEMS = [
-  { id: "bio", label: "O Cardume" },
-  { id: "calendar", label: "Agenda" },
-  { id: "socials", label: "Fotos" },
-  { id: "events", label: "Eventos" },
-  { id: "contact", label: "Contato" },
-];
-
 const COLORS_TOP = ["#13FFAA69", "#e4530069", "#DD335C69"];
 
 const Menu: React.FC = () => {
+  const { sections, videos } = useSiteContent();
+  const items = (['bio', 'calendar', 'socials', 'events', 'contact'] as const).filter(id => sections[id].visible).map(id => ({ id, label: sections[id].label }));
+  const menuItems: { id: string; label: string }[] = items;
+  if (videos?.visible && videos.links.length) {
+    const position = menuItems.findIndex(item => item.id === 'events' || item.id === 'contact');
+    menuItems.splice(position < 0 ? menuItems.length : position, 0, { id: 'videos', label: videos.label });
+  }
   const color = useMotionValue(COLORS_TOP[0]);
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -89,7 +89,7 @@ const Menu: React.FC = () => {
     button: {
       backgroundColor: "transparent",
       border: "none",
-      fontFamily: "Cubano, sans-serif",
+      fontFamily: "var(--site-title-font, Cubano), sans-serif",
       fontSize: "1.75rem", // text-sm equivalent
     },
   };
@@ -142,7 +142,7 @@ const Menu: React.FC = () => {
             style={{ backgroundImage }}
           >
             <ul id="main-menu" className="menu flex flex-col items-stretch gap-1">
-              {ITEMS.map((item) => (
+              {menuItems.map((item) => (
                 <li key={item.id}>
                   <button
                     style={styles.button}
@@ -163,7 +163,7 @@ const Menu: React.FC = () => {
         className="menu fixed left-0 pl-35 top-[2vh] hidden flex-row items-center gap-1 p-2 md:flex md:max-w-[100vw]"
         style={{ backgroundImage, backgroundPosition: "top left", zIndex: 140 }}
       >
-        {ITEMS.map((item) => (
+        {menuItems.map((item) => (
           <motion.li
             key={item.id}
             whileHover={hoverAnimation}

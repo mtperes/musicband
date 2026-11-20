@@ -10,14 +10,14 @@ interface UseCalendarEventsResult {
   retry: () => void;
 }
 
-function getFeedUrl(): string {
+function getFeedUrl(calendarUrl?: string): string {
   if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_USE_MOCK_CALENDAR === '1') {
     return '/mock-calendar.ics';
   }
-  return '/api/calendar';
+  return calendarUrl ? `/api/calendar?source=${encodeURIComponent(calendarUrl)}` : '/api/calendar';
 }
 
-export function useCalendarEvents(): UseCalendarEventsResult {
+export function useCalendarEvents(calendarUrl?: string): UseCalendarEventsResult {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,7 @@ export function useCalendarEvents(): UseCalendarEventsResult {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(getFeedUrl(), {
+        const response = await fetch(getFeedUrl(calendarUrl), {
           method: 'GET',
           headers: { Accept: 'text/calendar' },
         });
@@ -60,7 +60,7 @@ export function useCalendarEvents(): UseCalendarEventsResult {
     return () => {
       isMounted = false;
     };
-  }, [retryCount]);
+  }, [retryCount, calendarUrl]);
 
   return { events, isLoading, error, retry: () => setRetryCount((count) => count + 1) };
 }

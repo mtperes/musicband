@@ -1,9 +1,53 @@
+import { createCalendarHandler } from '../server/calendar.ts';
+import { defaultCalendarUrl, publicCalendarUrl } from '../src/utils/calendarSource.ts';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { parseUpcomingCalendarEvents } from '../src/utils/calendarEvents.ts';
 
 const feed = (...events: string[]) => `BEGIN:VCALENDAR\r\nVERSION:2.0\r\n${events.join('\r\n')}\r\nEND:VCALENDAR`;
 const event = (properties: string) => `BEGIN:VEVENT\r\n${properties.trim().replace(/\n/g, '\r\n')}\r\nEND:VEVENT`;
+
+test('calendar proxy uses the configured public iCal link without following redirects', async () => {
+  const source = 'https://calendar.google.com/calendar/ical/new%40group.calendar.google.com/public/basic.ics';
+  let captured = '';
+  const handler = createCalendarHandler(async (input, options) => {
+    captured = String(input);
+    assert.equal(options?.redirect, 'error');
+    return new Response(feed());
+  });
+  const result = await handler(new Request(`https://band.example/api/calendar?source=${encodeURIComponent(source)}`));
+  assert.equal(result.status, 200);
+  assert.equal(captured, source);
+  assert.match(result.headers.get('content-type') ?? '', /text\/calendar/);
+  assert.match(result.headers.get('cache-control') ?? '', /s-maxage=300/);
+  assert.equal(publicCalendarUrl(defaultCalendarUrl), defaultCalendarUrl);
+});
+
+test('calendar proxy rejects non-Google and secret links before any upstream fetch', async () => {
+  let fetches = 0;
+  const handler = createCalendarHandler(async () => { fetches++; return new Response(feed()); });
+  for (const source of [
+    'http://127.0.0.1/private',
+    'https://calendar.google.com.evil.example/calendar/ical/test/public/basic.ics',
+    'https://calendar.google.com/calendar/ical/test/private-secret/basic.ics',
+    'https://calendar.google.com/calendar/embed?src=test',
+    'https://user:password@calendar.google.com/calendar/ical/test/public/basic.ics',
+  ]) {
+    assert.throws(() => publicCalendarUrl(source));
+    const result = await handler(new Request(`https://band.example/api/calendar?source=${encodeURIComponent(source)}`));
+    assert.equal(result.status, 400);
+  }
+  assert.equal(fetches, 0);
+});
+
+test('calendar proxy rejects HTML, upstream failures and oversized feeds', async () => {
+  for (const response of [new Response('<html>Login</html>'), new Response('Unavailable', { status: 403 }), new Response('x'.repeat(2 * 1024 * 1024 + 1))]) {
+    const handler = createCalendarHandler(async () => response);
+    assert.equal((await handler(new Request('https://band.example/api/calendar'))).status, 502);
+  }
+  const handler = createCalendarHandler(async () => new Response(feed()));
+  assert.equal((await handler(new Request('https://band.example/api/calendar', { method: 'POST' }))).status, 405);
+});
 
 test('expands old weekly series into the next five unique occurrences', () => {
   const events = parseUpcomingCalendarEvents(feed(event(`

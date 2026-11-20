@@ -4,7 +4,7 @@ import SectionTitle from "./sectionTitle";
 import { TextFade } from "../effects/TextFade";
 import { useCalendarEvents } from "../hooks/useCalendarEvents";
 import { useReducedMotion } from "framer-motion";
-import videoSrc from "/w-bg.mp4";
+import { useSiteContent } from '../hooks/useSiteContent';
 import type { CalendarEvent } from "../utils/calendarEvents";
 
 const TIMEZONE = "Europe/Lisbon";
@@ -79,18 +79,20 @@ const EventItem: React.FC<{ event: CalendarEvent }> = ({ event }) => {
 };
 
 const Calendar: React.FC = () => {
-  const { events, isLoading, error, retry } = useCalendarEvents();
+  const { sections, identity, calendarUrl } = useSiteContent();
+  const { events, isLoading, error, retry } = useCalendarEvents(calendarUrl);
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
     <section id="calendar" aria-labelledby="calendar-heading" className="flex min-h-dvh flex-col px-3 sm:px-5 md:px-8">
-      <SectionTitle titleText="Agenda" id="calendar-heading" />
+      <SectionTitle titleText={sections.calendar.title} id="calendar-heading" />
 
       <article className="mx-auto mt-10 w-full max-w-screen-2xl flex-1 z-10 p-4 lg:p-10 relative bg-sky-500/20 rounded-4xl font-(family-name:--font1family) text-justify">
-        <video
+        {sections.calendar.text && <p className="mb-6 whitespace-pre-line">{sections.calendar.text}</p>}
+        {identity.backgroundMode === 'video' && identity.backgroundVideo && <video
           className="video-bg"
           style={styles.bgVideo}
-          src={videoSrc}
+          src={identity.backgroundVideo.url}
           autoPlay={!prefersReducedMotion}
           muted
           loop={!prefersReducedMotion}
@@ -98,7 +100,7 @@ const Calendar: React.FC = () => {
           preload={prefersReducedMotion ? "none" : "metadata"}
           aria-hidden="true"
           tabIndex={-1}
-        ></video>
+        ></video>}
 
         {isLoading ? (
           <TextFade direction="up">

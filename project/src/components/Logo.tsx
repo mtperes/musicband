@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import { motion, useScroll, useTransform } from "framer-motion";
 
-import logo from "../assets/sardinhas-logo.svg";
+import { useSiteContent } from '../hooks/useSiteContent';
 function scrollTo(target: string) {
   const element = document.getElementById(target);           
     if (element) {
@@ -12,6 +12,7 @@ function scrollTo(target: string) {
   }
 
 const Logo: React.FC = () => {
+  const { identity } = useSiteContent();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [viewport, setViewport] = useState({ width: window.innerWidth, height: window.innerHeight });
   const logoSize = isMobile ? 80 : 96;
@@ -59,11 +60,11 @@ const Logo: React.FC = () => {
           zIndex: 150,
           rotate: rotateLogo,
           opacity: opacity,
-          backgroundColor: "#EEEEEEff",
+          backgroundColor: identity.logoBackground,
           borderRadius: "50%",
         }}
         className="logo"
-        src={logo}
+        src={identity.logo.url}
         alt=""
 
       /></button>

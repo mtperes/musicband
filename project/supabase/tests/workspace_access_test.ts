@@ -1,5 +1,110 @@
 import { PGlite } from '@electric-sql/pglite';
 
+Deno.test('band CMS isolates drafts, enforces administrator access and publishes with revision checks', async () => {
+  const db = new PGlite();
+  const band = '11111111-1111-4111-8111-111111111111';
+  const otherBand = '22222222-2222-4222-8222-222222222222';
+  const admin = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  const reader = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+  const content = JSON.parse(await Deno.readTextFile(new URL('../../src/utils/siteDefaults.json', import.meta.url)));
+  async function denied(sql: string, args: unknown[] = []) {
+    let failed = false;
+    try { await db.query(sql, args); } catch { failed = true; }
+    if (!failed) throw new Error('Expected denied CMS operation: ' + sql);
+  }
+  try {
+    await db.exec(`
+      create role anon; create role authenticated; create role service_role bypassrls;
+      create schema auth; create schema storage;
+      create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz);
+      create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+      create table public.bands (id uuid primary key, slug text unique);
+      create table public.band_members (band_id uuid, user_id uuid, active boolean, roles text[]);
+      create table public.member_profiles (band_id uuid, user_id uuid, username text);
+      create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+      create table storage.objects (bucket_id text, name text);
+      create function storage.foldername(path text) returns text[] language sql as $$ select string_to_array(path, '/') $$;
+      alter table storage.objects enable row level security;
+      grant usage on schema auth, storage to authenticated;
+      grant select on public.band_members to authenticated;
+      grant select, insert on storage.objects to authenticated;
+    `);
+    await db.query('insert into auth.users values ($1, $2, now()), ($3, $4, now())', [admin, 'mt.peresn@gmail.com', reader, 'reader@example.com']);
+    await db.query('insert into public.bands values ($1, $2), ($3, $4)', [band, 'sardinhas-nomades', otherBand, 'other-band']);
+    await db.query('insert into public.band_members values ($1, $2, true, $3), ($1, $4, true, $5)', [band, admin, ['owner'], reader, ['viewer']]);
+    await db.query('insert into public.member_profiles values ($1, $2, $3)', [band, reader, 'reader']);
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611200001_band_site_cms.sql', import.meta.url)));
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611200002_site_calendar_forwarding.sql', import.meta.url)));
+    await db.exec(await Deno.readTextFile(new URL('../migrations/202611200003_site_video_gallery.sql', import.meta.url)));
+    await db.exec('set role authenticated');
+    await db.query("select set_config('request.jwt.claim.sub', $1, false)", [admin]);
+    await db.query('select public.save_band_site($1, $2, 0, false)', [band, content]);
+    await denied('select public.save_band_site($1, $2, 0, false)', [band, content]);
+    await denied('select public.save_band_site($1, $2, 1, true)', [otherBand, content]);
+    const privatePath = `${band}/draft.png`;
+    await db.query("insert into storage.objects values ('band-site-drafts', $1)", [privatePath]);
+    content.identity.logo = { url: `/draft/${privatePath}`, path: privatePath, bucket: 'band-site-drafts', alt: 'Draft logo' };
+    await db.query('select public.save_band_site($1, $2, 1, false)', [band, content]);
+    await denied('select public.save_band_site($1, $2, 2, true)', [band, content]);
+    await denied("insert into storage.objects values ('band-site-drafts', $1)", [`${otherBand}/foreign.png`]);
+    await db.exec('reset role; set role anon');
+    await denied('select draft from public.band_site_settings');
+    const unpublished = await db.query<{ content: unknown }>('select public.get_published_band_site($1) as content', ['sardinhas-nomades']);
+    if (unpublished.rows[0].content !== null) throw new Error('Draft was exposed publicly');
+    await db.exec('reset role; set role authenticated');
+    await db.query("select set_config('request.jwt.claim.sub', $1, false)", [reader]);
+    if ((await db.query('select * from public.band_site_settings')).rows.length) throw new Error('Viewer read drafts');
+    if ((await db.query('select * from storage.objects')).rows.length) throw new Error('Viewer read draft files');
+    await denied('select public.save_band_site($1, $2, 2, false)', [band, content]);
+    await db.query("select set_config('request.jwt.claim.sub', $1, false)", [admin]);
+    await db.query("insert into storage.objects values ('band-site-media', $1)", [privatePath]);
+    content.identity.logo.bucket = 'band-site-media';
+    content.identity.logo.url = `https://example.supabase.co/storage/v1/object/public/band-site-media/${privatePath}`;
+    await db.query('select public.save_band_site($1, $2, 2, true)', [band, content]);
+    await denied('select public.save_band_site($1, $2, 2, false)', [band, content]);
+    const foreign = structuredClone(content);
+    foreign.identity.logo.path = `${otherBand}/foreign.png`;
+    await denied('select public.save_band_site($1, $2, 3, true)', [band, foreign]);
+    const invalid = structuredClone(content);
+    delete invalid.typography.titles.font;
+    await denied('select public.save_band_site($1, $2, 3, false)', [band, invalid]);
+    const invalidCalendar = structuredClone(content);
+    invalidCalendar.calendarUrl = 'https://calendar.google.com/calendar/ical/test/private-secret/basic.ics';
+    await denied('select public.save_band_site($1, $2, 3, false)', [band, invalidCalendar]);
+    const invalidVideos = structuredClone(content);
+    invalidVideos.videos.links = ['https://example.com/video'];
+    await denied('select public.save_band_site($1, $2, 3, false)', [band, invalidVideos]);
+    await denied('select public.save_band_site($1, $2, 3, false, $3)', [band, content, ['missing-user']]);
+    await db.query('select public.save_band_site($1, $2, 3, false, $3)', [band, content, ['reader']]);
+    await db.exec('reset role; set role service_role');
+    const draftRecipients = await db.query<{ email: string }>('select * from public.contact_email_recipients()');
+    if (draftRecipients.rows.length !== 1 || draftRecipients.rows[0].email !== 'mt.peresn@gmail.com') throw new Error('Draft changed live email forwarding');
+    await db.exec('reset role; set role authenticated');
+    await db.query('select public.save_band_site($1, $2, 4, true, $3)', [band, content, ['reader']]);
+    await db.exec('reset role; set role service_role');
+    const liveRecipients = await db.query<{ email: string }>('select * from public.contact_email_recipients()');
+    if (liveRecipients.rows.length !== 1 || liveRecipients.rows[0].email !== 'reader@example.com') throw new Error('Published recipient usernames were not resolved privately');
+    await db.exec('reset role; set role anon');
+    await denied('select public.contact_email_recipients()');
+    const published = await db.query<{ content: { name: string } }>('select public.get_published_band_site($1) as content', ['sardinhas-nomades']);
+    if (published.rows[0].content.name !== 'Sardinhas Nômades') throw new Error('Published content unavailable');
+    if (JSON.stringify(published.rows[0].content).includes('reader@example.com') || JSON.stringify(published.rows[0].content).includes('contact_usernames')) throw new Error('Private forwarding data leaked publicly');
+    await db.exec('reset role');
+    const videoContent = structuredClone(content);
+    videoContent.videos.links = ['https://www.youtube.com/watch?v=M7lc1UVf-VE'];
+    await db.exec('set role authenticated');
+    await db.query('select public.save_band_site($1, $2, 5, true)', [band, videoContent]);
+    await db.exec('reset role; set role anon');
+    const gallery = await db.query<{ content: { videos: { links: string[] }; sections: { bio: { title: string; text: string } } } }>('select public.get_published_band_site($1) as content', ['sardinhas-nomades']);
+    if (gallery.rows[0].content.videos.links[0] !== videoContent.videos.links[0] || gallery.rows[0].content.sections.bio.title !== content.sections.bio.title || gallery.rows[0].content.sections.bio.text !== content.sections.bio.text) throw new Error('Video publishing changed the biography or lost the video links');
+    await db.exec('reset role');
+    await db.query('update public.band_members set active = false where user_id = $1', [admin]);
+    await db.exec('set role authenticated');
+    await db.query("select set_config('request.jwt.claim.sub', $1, false)", [admin]);
+    await denied('select public.save_band_site($1, $2, 3, false)', [band, content]);
+  } finally { await db.close(); }
+});
+
 Deno.test('viewer reads music without writes, usernames resolve privately and passwords stay in Auth', async () => {
   const db = new PGlite();
   const admin = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';

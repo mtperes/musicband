@@ -1,5 +1,5 @@
 
-import { lazy, Suspense, useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { BrowserRouter, Navigate, Route, Routes, Link } from 'react-router-dom';
 import Banner from './components/Banner'
@@ -10,9 +10,11 @@ import Events from './components/Events'
 import Bio from './components/Bio'
 import Contact from './components/Contact'
 import SocialCarousel from './components/SocialCarousel'
- import videoSrc from './assets/w-bg.mp4';
 import Logo from './components/Logo'
 import Footer from './components/Footer';
+import { SiteContentContext } from './hooks/useSiteContent';
+import { defaultSiteContent, validateSiteContent } from './utils/siteContent';
+import { supabase } from './utils/supabase';
 
 const AdminPortal = lazy(() =>
   import('./components/WorkspacePortals').then(({ AdminPortal }) => ({ default: AdminPortal })),
@@ -24,6 +26,7 @@ const AuthConfirm = lazy(() => import('./components/AuthConfirm'));
 const ToolsPortal = lazy(() =>
   import('./components/WorkspacePortals').then(({ ToolsPortal }) => ({ default: ToolsPortal })),
 );
+const VideoGallery = lazy(() => import('./components/VideoGallery'));
 
 function App() {
   return (
@@ -47,6 +50,16 @@ function App() {
 
 function PublicSite() {
   const backgroundVideoRef = useRef<HTMLVideoElement>(null);
+  const [content, setContent] = useState(defaultSiteContent);
+
+  useEffect(() => {
+    let current = true;
+    if (supabase) void supabase.rpc('get_published_band_site', { band_slug: 'sardinhas-nomades' }).then(({ data, error }) => {
+      if (!current || error || !data) return;
+      try { validateSiteContent(data); setContent(data); } catch { return; }
+    });
+    return () => { current = false; };
+  }, []);
 
   useEffect(() => {
     const video = backgroundVideoRef.current;
@@ -59,16 +72,28 @@ function PublicSite() {
     playBackground();
     document.addEventListener('visibilitychange', playBackground);
     return () => document.removeEventListener('visibilitychange', playBackground);
-  }, []);
+  }, [content.identity.backgroundVideo?.url, content.identity.backgroundMode]);
+
+  const siteStyle = {
+    '--site-title-font': `"${content.typography.titles.font}", sans-serif`,
+    '--site-subtitle-font': `"${content.typography.subtitles.font}", sans-serif`,
+    '--site-text-font': `"${content.typography.text.font}", sans-serif`,
+    '--site-title-color': content.typography.titles.color,
+    '--site-subtitle-color': content.typography.subtitles.color,
+    '--site-text-color': content.typography.text.color,
+    backgroundColor: content.identity.backgroundColor,
+    backgroundImage: content.identity.backgroundMode === 'image' && content.identity.backgroundImage ? `url("${content.identity.backgroundImage.url}")` : undefined,
+  } as CSSProperties;
 
   return (
-    <>
+    <SiteContentContext.Provider value={content}>
+    <div className="public-site" style={siteStyle}>
       <a className="skip-link" href="#main-content">Pular para o conteúdo</a>
-      <video
+      {content.identity.backgroundMode === 'video' && content.identity.backgroundVideo && <video
         ref={backgroundVideoRef}
         id="bgVideo"
         className="background-video"
-        src={videoSrc}
+        src={content.identity.backgroundVideo.url}
         autoPlay
         muted
         loop
@@ -76,20 +101,22 @@ function PublicSite() {
         preload="auto"
         aria-hidden="true"
         tabIndex={-1}
-      />
+      />}
       <Logo />
       <Menu />
       <main id="main-content" tabIndex={-1}>
-        <h1 className="sr-only">Sardinhas Nômades</h1>
-        <Banner />
-        <Bio />
-        <Calendar />
-        <SocialCarousel />
-        <Events />
-        <Contact />
+        <h1 className="sr-only">{content.name}</h1>
+        {content.sections.home.visible && <Banner />}
+        {content.sections.bio.visible && <Bio />}
+        {content.sections.calendar.visible && <Calendar />}
+        {content.sections.socials.visible && <SocialCarousel />}
+        {content.videos?.visible && content.videos.links.length > 0 && <Suspense fallback={null}><VideoGallery /></Suspense>}
+        {content.sections.events.visible && <Events />}
+        {content.sections.contact.visible && <Contact />}
       </main>
       <Footer />
-    </>
+    </div>
+    </SiteContentContext.Provider>
   )
 }
 

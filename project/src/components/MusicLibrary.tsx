@@ -160,9 +160,6 @@ export default function MusicLibrary() {
 
   return (
     <section aria-labelledby="music-heading" className="[&_button]:cursor-pointer [&_button:disabled]:cursor-wait [&_input]:max-w-full">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div><p className="text-sm font-medium uppercase text-[#39736b]">Sardinhas Nômades</p><h1 id="music-heading" className="mt-2 text-3xl font-semibold">Música</h1></div>
-      </div>
       {error && <div role="alert" className="mt-5 flex items-start justify-between gap-3 border-l-4 border-red-600 bg-red-50 p-4 text-sm text-red-900"><span className="min-w-0 break-words">{error}</span><button type="button" aria-label="Fechar erro" title="Fechar erro" onClick={() => setError('')}><X size={18} /></button></div>}
       {!supabase ? <p role="status" className="mt-8">Supabase indisponível. Configure o URL e a chave pública e reinicie o servidor.</p>
         : loading ? <p role="status" className="mt-8">A carregar...</p>

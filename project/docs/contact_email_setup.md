@@ -4,7 +4,13 @@
 
 The public form posts name, email and message to same-origin `/api/contact`. A Node backend validates the request and uses the provisioned Resend Free integration. The sender and recipients are never accepted from visitor input, and API keys are never included in the frontend bundle. The visitor's address is Reply-To, not From.
 
-Messages go to `mt.peresn@gmail.com`. In normal mode, additional active, confirmed band members with `production`, `receive_mail`, `admin` or legacy `owner` tags are included privately in BCC. The server does not return recipient addresses to the browser.
+Messages go to `mt.peresn@gmail.com`. In normal mode, additional recipients are included privately in BCC. When CMS forwarding usernames have been published, the server resolves those usernames to active, confirmed members of the same band with real email addresses. An empty forwarding list preserves the existing `production`, `receive_mail`, `admin` or legacy `owner` role-based recipients. The server does not return recipient addresses to the browser.
+
+## CMS Forwarding
+
+The [CMS editor](../src/components/SiteCMS.tsx) in `/admin` has an **Encaminhar mensagens para utilizadores** field under **Contato**. It accepts up to 30 usernames separated by commas. Saving a draft does not change live routing; **Publicar** activates the forwarding list. These names are stored in private columns, not in the public website JSON. Inactive, unconfirmed, missing or cross-band recipients are rejected on save and excluded from delivery lookups.
+
+The base [CMS migration](../supabase/migrations/202611200001_band_site_cms.sql) and [calendar/forwarding migration](../supabase/migrations/202611200002_site_calendar_forwarding.sql) were applied to the linked Supabase project on 2026-11-20. They are one-time migrations, not rerunnable seed scripts. Frontend/API changes still require the website's usual deployment to appear in production.
 
 The form shows success only after Resend accepts a message. On validation, timeout, configuration or provider errors it keeps the visitor's input and displays the error. Provider acceptance is not proof of inbox delivery.
 

@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { LogIn, LogOut, RefreshCw } from 'lucide-react';
+import { Eye, LogIn, LogOut, Music2, RefreshCw, ShieldCheck, Settings } from 'lucide-react';
 import { supabase } from '../utils/supabase';
 import { workspaceUsername } from '../utils/workspaceIdentity';
 import { WorkspaceAuthContext, useWorkspaceAuth, type Membership } from '../hooks/useWorkspaceAuth';
 
-const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded border border-[#bdcfca] bg-white px-3 py-2 text-sm text-[#182628] hover:bg-[#e6efec] disabled:opacity-50';
+const button = 'inline-flex min-h-9 items-center justify-center gap-2 rounded border border-[#bdcfca] bg-white px-3 py-1.5 text-sm text-[#182628] hover:bg-[#e6efec] disabled:opacity-50';
 
 export function WorkspaceAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -61,7 +61,7 @@ export function WorkspaceAuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function WorkspaceAccount() {
-  const { session } = useWorkspaceAuth();
+  const { session, memberships } = useWorkspaceAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   async function signOut() {
@@ -73,8 +73,21 @@ export function WorkspaceAccount() {
     } finally { setBusy(false); }
   }
   if (!session) return null;
-  return <div className="flex min-w-0 flex-wrap items-center gap-3">
-    <span className="max-w-60 break-all text-sm text-[#52625f]">{workspaceUsername(session.user.email ?? '')}</span>
+  const roleLabels = [
+    { role: 'owner', label: 'Responsável', Icon: ShieldCheck },
+    { role: 'admin', label: 'Admin', Icon: Settings },
+    { role: 'musician', label: 'Músico', Icon: Music2 },
+    { role: 'viewer', label: 'Leitor', Icon: Eye },
+  ].filter(({ role }) => memberships.some((member) => member.roles.includes(role)));
+  return <div className="workspace-account min-w-0 flex-wrap">
+    <div className="workspace-account-details">
+      <span className="max-w-60 break-all text-sm text-[#52625f]">{workspaceUsername(session.user.email ?? '')}</span>
+      {roleLabels.length > 0 && <div className="workspace-account-roles" aria-label="Funções na banda">
+        {roleLabels.map(({ role, label, Icon }) => <span key={role} className="workspace-role-label" title={label}>
+          <Icon size={12} aria-hidden="true" />{label}
+        </span>)}
+      </div>}
+    </div>
     <button type="button" className={button} disabled={busy} onClick={() => void signOut()}><LogOut size={18} /> Sair</button>
     {error && <p role="alert" className="w-full text-sm text-red-800">{error}</p>}
   </div>;

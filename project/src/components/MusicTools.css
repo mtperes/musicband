@@ -1,6 +1,5 @@
 .music-tools { --tool-ink: #203b38; --tool-green: #177354; --tool-red: #b43e48; --tool-line: #cddbd6; }
-.tools-heading, .instrument-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.tools-heading { margin-bottom: 30px; color: var(--tool-ink); }
+.instrument-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .tools-instruments { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr); border-block: 1px solid var(--tool-line); background: linear-gradient(120deg, #fff 0%, #f8fbf9 100%); }
 .tools-tuner, .tools-rhythm { min-width: 0; padding: 26px; }
 .tools-tuner { border-right: 1px solid var(--tool-line); }
@@ -69,7 +68,7 @@
 .workspace .tools-error { margin-top: 14px; color: #a32d40; }
 @media (max-width: 760px) {
   .tools-instruments { grid-template-columns: minmax(0, 1fr); }.tools-tuner { border-right: 0; border-bottom: 1px solid var(--tool-line); }
-  .tools-tuner, .tools-rhythm { padding: 22px 16px; }.tools-heading { margin-bottom: 22px; }.tuner-gauge { height: 155px; }.tuning-display { padding-top: 20px; }
+  .tools-tuner, .tools-rhythm { padding: 22px 16px; }.tuner-gauge { height: 155px; }.tuning-display { padding-top: 20px; }
   .rhythm-preset-controls { flex-wrap: wrap; }.rhythm-preset-controls label { flex-basis: 100%; }.rhythm-preset-controls .tools-secondary { flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .music-tools *, .music-tools *::before { transition: none !important; } }

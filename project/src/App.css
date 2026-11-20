@@ -179,6 +179,41 @@ p{
   filter: blur(45px);
 }
 
+.public-site {
+  isolation: isolate;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--site-text-color);
+  font-family: var(--site-text-font);
+}
+.public-site :is(h1, h2), .public-site :is(h1, h2) * {
+  font-family: var(--site-title-font) !important;
+  color: var(--site-title-color) !important;
+  letter-spacing: 0;
+}
+.public-site h3 {
+  font-family: var(--site-subtitle-font) !important;
+  color: var(--site-subtitle-color) !important;
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+}
+.public-site :is(p, article, input, textarea, .calendar-description) {
+  font-family: var(--site-text-font) !important;
+  color: var(--site-text-color);
+  letter-spacing: 0;
+}
+.public-site :is(button, label), .public-site .menu button {
+  font-family: var(--site-title-font);
+  color: var(--site-title-color);
+}
+.public-site h2 { overflow-wrap: anywhere; }
+.public-site .gallery-link { font-family: var(--site-title-font); color: var(--site-title-color); }
+@media (min-width: 768px) and (max-width: 1100px) {
+  .public-site .menu button { font-size: 1.2rem !important; margin: .5rem .35rem; white-space: nowrap; }
+}
+
 
 /* For screens up to 767px wide */
 @media (max-width: 767px) {

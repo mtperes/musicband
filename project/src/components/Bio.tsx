@@ -4,19 +4,21 @@ import BandCarousel from "./BandCarousel";
 import { useReducedMotion } from "framer-motion";
 import SectionTilte from "./sectionTitle";
 import { TextFade } from "../effects/TextFade"; 
-import videoSrc from "/w-bg.mp4";
+import { useSiteContent } from '../hooks/useSiteContent';
 const Bio: React.FC = () => {
+  const { sections, identity } = useSiteContent();
+  const section = sections.bio;
   const prefersReducedMotion = useReducedMotion() ?? false;
   return (
     <section className="bio min-h-screen px-3 sm:px-5 md:px-8" id="bio" aria-labelledby="bio-heading">
-      <SectionTilte titleText="O Cardume" id="bio-heading" />
+      <SectionTilte titleText={section.title} id="bio-heading" />
       <BandCarousel />
 
       <article className="relative z-10 -mt-20 rounded-4xl bg-sky-500/20 p-4 text-justify m-auto max-w-screen-2xl sm:p-5 md:-mt-32 lg:-mt-40 lg:p-10 font-(family-name:--font1family)">
-        <video
+        {identity.backgroundMode === 'video' && identity.backgroundVideo && <video
           className="video-bg "
           style={styles.bgVideo}
-          src={videoSrc}
+          src={identity.backgroundVideo.url}
           autoPlay={!prefersReducedMotion}
           muted
           loop={!prefersReducedMotion}
@@ -24,22 +26,10 @@ const Bio: React.FC = () => {
           preload={prefersReducedMotion ? "none" : "metadata"}
           aria-hidden="true"
           tabIndex={-1}
-        ></video>
+        ></video>}
         <TextFade direction="up">
-              <h3 className="mb-3"> Sardinhas Nômades</h3>
-          <p className="mb-10">
-             Compomos uma vibrante
-            fanfarra formada em 2020, composta por talentosos músicos que
-            dominam percussão, saxofones, trompetes e trombones. Com uma mistura
-            eletrizante de ritmos brasileiros como carnaval, samba e axé, além
-            de toques globais de funk e electro, nossos espetáculos são uma
-            explosão de energia e irreverência que contagia qualquer plateia.
-            Nosso principal objetivo é trazer a essência do carnaval brasileiro
-            para Lisboa, criando experiências inesquecíveis e unindo culturas
-            através da música. Venha se divertir conosco e sentir o verdadeiro
-            espírito festivo que só a Sardinhas Nômades pode proporcionar!
-            
-          </p>
+                <h3 className="mb-3">{section.subtitle}</h3>
+              <p className="mb-10 whitespace-pre-line">{section.text}</p>
         </TextFade>
       </article>
     </section>

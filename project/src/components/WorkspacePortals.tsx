@@ -1,7 +1,9 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import { lazy, Suspense, type CSSProperties, type ReactNode } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { Gauge, Music2, Settings } from 'lucide-react';
 import MusicLibrary from './MusicLibrary';
 import AdminMembers from './AdminMembers';
+import SiteCMS from './SiteCMS';
 import { WorkspaceAccount, WorkspaceAuthProvider, WorkspaceGuard } from './WorkspaceAuth';
 import { useWorkspaceAuth } from '../hooks/useWorkspaceAuth';
 import './WorkspacePortals.css';
@@ -9,10 +11,10 @@ import './WorkspacePortals.css';
 const MusicTools = lazy(() => import('./MusicTools'));
 
 const workspaceLinks = [
-  { to: '/admin', label: 'Admin' },
-  { to: '/music', label: 'Música' },
-  { to: '/tools', label: 'Ferramentas' },
-];
+  { to: '/admin', label: 'Admin', title: 'Administração', activePath: 'Admin', accent: '#38bdf8', Icon: Settings },
+  { to: '/music', label: 'Música', title: 'Música', activePath: 'Música', accent: '#65a30d', Icon: Music2 },
+  { to: '/tools', label: 'Ferramentas', title: 'Ferramentas', activePath: 'Ferramentas', accent: '#f26b4f', Icon: Gauge },
+] as const;
 
 function WorkspaceLayout({
   activePath,
@@ -26,47 +28,51 @@ function WorkspaceLayout({
   return (
     <div className="workspace min-h-screen bg-[#f3f6f5] text-[#182628]">
       <header className="border-b border-[#d6dfdc] bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="workspace-header-inner mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-2 sm:px-6">
           <Link
             to="/"
             aria-label="Collective"
             className="inline-flex items-center font-(family-name:--font0family) text-xl leading-none text-[#1f4644]"
           >
             <span aria-hidden="true">Co</span>
-            <span
+            <img
               aria-hidden="true"
-              className="mx-[0.04em] inline-block h-[1.35em] w-[1.18em] bg-current"
-              style={{
-                mask: 'url(/brand/collective-mark.svg) center / contain no-repeat',
-                WebkitMask: 'url(/brand/collective-mark.svg) center / contain no-repeat',
-              }}
+              alt=""
+              src="/brand/collective-mark.svg"
+              className="mx-[0.04em] inline-block h-[1.35em] w-[1.18em] object-contain"
             />
             <span aria-hidden="true">ective</span>
           </Link>
-          <nav aria-label="Áreas da plataforma" className="flex items-center gap-2">
+          <nav aria-label="Áreas da plataforma" className="workspace-nav flex items-center gap-1">
             {workspaceLinks.filter((item) => item.to !== '/admin' || canAdmin).map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={({ isActive }) =>
-                  `rounded px-3 py-2 text-sm font-medium ${
-                    isActive ? 'bg-[#dcece7] text-[#174c45]' : 'text-[#435552] hover:bg-[#edf2f0]'
-                  }`
-                }
+                className={({ isActive }) => `workspace-nav-link${isActive ? ' is-active' : ''}`}
+                style={{ '--workspace-accent': item.accent } as CSSProperties}
                 end
               >
-                {item.label}
+                <item.Icon size={16} aria-hidden="true" />
+                <span>{item.label}</span>
               </NavLink>
             ))}
-            <Link to="/" className="ml-2 px-2 py-2 text-sm text-[#435552] underline underline-offset-4">
+            <Link to="/" className="workspace-site-link ml-1 px-2 py-1.5 text-sm">
               Site
             </Link>
           </nav>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12" tabIndex={-1}>
-        <div className="mb-4 flex justify-end"><WorkspaceAccount /></div>
+      <main className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-6" tabIndex={-1}>
+        {workspaceLinks.filter((item) => item.activePath === activePath).map(({ title, activePath: _activePath, accent, Icon }) => (
+          <div key={activePath} className="workspace-page-header mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+            <h1 className="workspace-page-title flex items-center gap-3">
+              <Icon size={27} strokeWidth={2.2} aria-hidden="true" style={{ color: accent }} />
+              {title}
+            </h1>
+            <WorkspaceAccount />
+          </div>
+        ))}
         {children}
         <p className="mt-12 border-t border-[#d6dfdc] pt-4 text-sm text-[#52625f]">
           Workspace: Sardinhas Nômades
@@ -77,34 +83,13 @@ function WorkspaceLayout({
   );
 }
 
-function FeatureList({ items }: { items: { title: string; description: string }[] }) {
-  return (
-    <ul className="mt-8 divide-y divide-[#d6dfdc] border-y border-[#d6dfdc]">
-      {items.map((item) => (
-        <li key={item.title} className="flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-          <span className="font-medium">{item.title}</span>
-          <span className="text-sm text-[#52625f]">{item.description}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 export function AdminPortal() {
   return (
     <WorkspaceAuthProvider>
     <WorkspaceLayout activePath="Admin">
       <WorkspaceGuard admin>
-      <p className="text-sm font-medium uppercase text-[#39736b]">Gestão da banda</p>
-      <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Administração</h1>
       <AdminMembers />
-      <FeatureList
-        items={[
-          { title: 'Perfil e identidade', description: 'Gestão de conteúdo por configurar' },
-          { title: 'Agenda e eventos', description: 'Integração de escrita por configurar' },
-          { title: 'Galeria e vídeos', description: 'Biblioteca de media por configurar' },
-        ]}
-      />
+      <SiteCMS />
       </WorkspaceGuard>
     </WorkspaceLayout>
     </WorkspaceAuthProvider>

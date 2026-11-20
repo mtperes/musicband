@@ -2,19 +2,15 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, EffectFlip, Keyboard } from 'swiper/modules';
 import { useReducedMotion } from 'framer-motion';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 
 import 'swiper/swiper-bundle.css';
 
 const BandCarousel: React.FC = () => {
   const prefersReducedMotion = useReducedMotion() ?? false;
-  const posts = [
-    '/band/band1.png',
-    '/band/band2.png',
-    '/band/band3.png',
-
-
-  ];
+  const posts = useSiteContent().sections.bio.media;
+  if (!posts.length) return null;
 
   return (
   
@@ -26,7 +22,7 @@ const BandCarousel: React.FC = () => {
         direction={'vertical'}
         autoplay={prefersReducedMotion ? false : { delay: 1000, disableOnInteraction: false }}
         keyboard={{ enabled: true, onlyInViewport: true }}
-        loop={true}
+        loop={posts.length > 1}
         speed={prefersReducedMotion ? 0 : 600}
         effect='fade'
         fadeEffect={{ crossFade: true }}
@@ -35,10 +31,10 @@ const BandCarousel: React.FC = () => {
         {posts.map((post, index) => (
           <SwiperSlide
             className='swiper-slide'
-            key={`${post}-${index}`}
+            key={`${post.url}-${index}`}
             role="img"
-            aria-label={`Foto da banda Sardinhas Nômades ${index + 1}`}
-            style={{ backgroundImage: `url(${post})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', height: '100%' }}
+            aria-label={post.alt}
+            style={{ backgroundImage: `url("${post.url}")`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', height: '100%' }}
           >
           </SwiperSlide>
         ))}
