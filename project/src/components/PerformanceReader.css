@@ -1,0 +1,90 @@
+.performance-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #182628;
+  background: #fff;
+  letter-spacing: 0;
+}
+
+.performance-dialog::backdrop { background: #182628; }
+.performance-reader { position: relative; isolation: isolate; height: 100%; min-width: 0; --reader-header-height: 120px; --reader-navigation-height: 74px; --reader-score-top: 0px; --reader-tools-top: var(--reader-header-height); }
+.performance-reader button, .performance-reader select, .performance-reader a {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #bdcfca;
+  border-radius: 4px;
+  background: #fff;
+  color: #182628;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.performance-reader button, .performance-reader a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px; }
+.performance-reader button:disabled { opacity: 1; color: #7a8a84; border-color: #d6dfdc; cursor: default; }
+.performance-reader button:hover:not(:disabled) { background: #e6efec; }
+.performance-reader :focus-visible { outline: 3px solid #a7481e; outline-offset: -3px; }
+.reader-header { position: absolute; inset: 0 0 auto; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) 8px max(8px, env(safe-area-inset-left)); background: transparent; }
+.reader-heading { flex: 1; min-width: 0; }
+.reader-heading p { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: #52625f; }
+.reader-heading h1 { font-size: 16px; font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+.reader-title-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.reader-title-row h1 { min-width: 0; }
+.reader-source-label { display: none; flex: none; font-size: 12px; }
+.reader-instrument { max-width: 180px; }
+.reader-instrument select { width: 100%; padding: 8px; }
+.reader-notice { position: absolute; top: var(--reader-header-height); left: 0; right: 0; z-index: 3; padding: 6px 12px; background: #fff2d6; font-size: 13px; }
+.reader-score, .score-document { display: flex; flex: 1; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
+.reader-score { position: absolute; inset: var(--reader-score-top) 0 0; z-index: 0; }
+.score-document { position: relative; --score-tools-height: 52px; }
+.reader-external-score { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.reader-external-score iframe { flex: 1; width: 100%; min-height: 0; border: 0; background: #fff; }
+.score-tools { position: absolute; top: var(--reader-tools-top); left: 0; right: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px; background: transparent; padding: 4px; }
+.score-page-controls { display: flex; align-items: center; gap: 4px; }
+.score-page-controls select { max-width: 110px; padding: 4px; }
+.score-viewport { position: absolute; inset: 0; overflow: auto; overscroll-behavior: contain; background: transparent; scroll-padding-top: calc(var(--reader-tools-top) + var(--score-tools-height)); }
+.score-viewport .react-pdf__Document { width: max-content; min-width: 100%; padding-top: calc(var(--reader-tools-top) + var(--score-tools-height)); padding-bottom: var(--reader-navigation-height); }
+.score-page { position: relative; margin: 0 auto 8px; background: #fff; }
+.score-page canvas { display: block; max-width: none; }
+.score-page p { padding: 16px; font-size: 14px; }
+.reader-message { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: calc(var(--reader-tools-top) + 24px) 24px calc(var(--reader-navigation-height) + 24px); text-align: center; overflow: auto; overflow-wrap: anywhere; }
+.reader-navigation { position: absolute; inset: auto 0 0; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); background: transparent; }
+.reader-navigation button { min-height: 56px; font-size: 16px; font-weight: 600; }
+.reader-position { padding: 6px; border-radius: 4px; background: #fff; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.reader-drawer { position: absolute; inset: 0 auto 0 0; z-index: 4; width: min(100%, 420px); display: flex; flex-direction: column; background: transparent; backdrop-filter: blur(16px); border-right: 1px solid #bdcfca; box-shadow: 8px 0 24px #18262830; }
+.reader-drawer-heading { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid #bdcfca; }
+.reader-drawer-heading h2 { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+.reader-drawer ol { overflow-y: auto; padding: 8px; }
+.reader-drawer li { margin-bottom: 4px; }
+.reader-drawer li button { display: flex; width: 100%; text-align: left; min-height: 56px; }
+.reader-drawer li button > span:nth-child(2) { flex: 1; overflow-wrap: anywhere; }
+.reader-drawer [aria-current="step"] { background: #dcece7; border-color: #39736b; font-weight: 600; }
+
+@media (max-width: 1023px) {
+  .performance-reader { --reader-score-top: calc(var(--reader-header-height) + 8px); --reader-tools-top: 0px; }
+}
+
+@media (min-width: 1024px) {
+  .reader-title-row { color: #fff; text-shadow: 0 1px 2px #182628, 0 0 4px #182628; }
+  .reader-source-label { display: inline; }
+}
+
+@media (max-width: 600px) {
+  .reader-instrument { flex-basis: 100%; max-width: none; }
+  .reader-instrument select { min-height: 44px; }
+  .reader-navigation { gap: 6px; }
+  .reader-navigation button { gap: 4px; font-size: 14px; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .reader-header { flex-wrap: nowrap; }
+  .reader-instrument { flex-basis: auto; max-width: 150px; }
+  .reader-heading h1 { font-size: 14px; }
+  .reader-navigation button { min-height: 44px; }
+}

@@ -10,9 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+test-results/
+playwright-report/
 *.local
 .env
+token.env
 .env.*.local
+supabase/seed-members.sql
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +29,5 @@ dist-ssr
 *.sw?
 # Custom banner video 
 assets/banner-video.mov
+.vercel
+.env*

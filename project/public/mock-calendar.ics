@@ -1,0 +1,87 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//musicband//mock//PT-BR
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:mock-past-1@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260501T200000
+DTEND:20260501T230000
+SUMMARY:Show passado - taverna do mar
+DESCRIPTION:Evento antigo ja encerrado, usado apenas para validar o filtro de eventos futuros.
+LOCATION:Rua das Pedras, 100
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-past-2@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260510T190000
+DTEND:20260510T220000
+SUMMARY:Ensaio aberto - semana passada
+DESCRIPTION:Ensaio geral para o festival.
+LOCATION:Estúdio Sardinhas
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-1@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260620T210000
+DTEND:20260620T230000
+SUMMARY:Show no Festival Sardinhas
+DESCRIPTION:Apresentacao no palco principal com participacao especial da banda convidada.
+LOCATION:Praia da Costa, s/n - Barra Velha
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-2@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260705T200000
+DTEND:20260705T220000
+SUMMARY:Casamento Marina e Joao
+DESCRIPTION:Repertório acústico para a cerimônia.
+LOCATION:Espaço Villa Mar, Itajaí
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-3@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260718T220000
+DTEND:20260719T020000
+SUMMARY:Bar do Zeca - noite de samba
+DESCRIPTION:Ensaio geral aberto ao público; couvert artístico R$ 15.
+LOCATION:Bar do Zeca, Centro
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-4@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260802T190000
+DTEND:20260802T220000
+SUMMARY:Aniversário de Balneário
+DESCRIPTION:Palco na orla; setlist com clássicos do rock nacional.
+LOCATION:Praça Central de Balneário Camboriú
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-5@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260815T180000
+DTEND:20260815T210000
+SUMMARY:Festa da Tainha
+DESCRIPTION:Show na praça de pesca com direito a morada do mestre Cerol.
+LOCATION:Colônia de Pescadores Z-3
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-6@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260830T210000
+DTEND:20260831T000000
+SUMMARY:Show acústico no café
+DESCRIPTION:Rodada de violão e voz; entrada franca.
+LOCATION:Café com Letras, Rua das Flores 220
+END:VEVENT
+BEGIN:VEVENT
+UID:mock-future-7@musicband
+DTSTAMP:20260101T000000Z
+DTSTART:20260912T200000
+DTEND:20260912T223000
+SUMMARY:Rock no Quintal
+DESCRIPTION:Evento beneficente com várias bandas locais.
+LOCATION:Quintal do Circo, SC-401 km 12
+END:VEVENT
+END:VCALENDAR

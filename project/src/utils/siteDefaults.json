@@ -1,0 +1,47 @@
+{
+  "name": "Sardinhas Nômades",
+  "calendarUrl": "https://calendar.google.com/calendar/ical/1aa1550534d11c7cdfa85fbcbf1b0852806cdac52efb8e540d22ffdfbb3d6ea5%40group.calendar.google.com/public/basic.ics",
+  "videos": { "label": "Videos", "title": "Videos", "text": "", "visible": true, "links": [] },
+  "identity": {
+    "logo": { "url": "/src/assets/sardinhas-logo.svg", "alt": "Sardinhas Nômades" },
+    "logoBackground": "#eeeeee",
+    "headingImagesVisible": true,
+    "backgroundMode": "video",
+    "backgroundColor": "#242424",
+    "backgroundImage": null,
+    "backgroundVideo": { "url": "/src/assets/w-bg.mp4", "alt": "" },
+    "headingStart": { "url": "/src/assets/sardinhas-head-logo.svg", "alt": "" },
+    "headingEnd": { "url": "/src/assets/sardinhas-logo-tail.svg", "alt": "" }
+  },
+  "typography": {
+    "titles": { "font": "Cubano", "color": "#f7faff" },
+    "subtitles": { "font": "Rubik", "color": "#f7faff" },
+    "text": { "font": "Rubik", "color": "#f7faff" }
+  },
+  "sections": {
+    "home": { "label": "Início", "title": "Sardinhas Nômades", "text": "", "visible": true, "media": [{ "url": "/src/assets/banner-video.mp4", "alt": "Espetáculo Sardinhas Nômades" }] },
+    "bio": {
+      "label": "O Cardume", "title": "O Cardume", "subtitle": "Sardinhas Nômades", "visible": true,
+      "text": "Compomos uma vibrante fanfarra formada em 2020, composta por talentosos músicos que dominam percussão, saxofones, trompetes e trombones. Com uma mistura eletrizante de ritmos brasileiros como carnaval, samba e axé, além de toques globais de funk e electro, nossos espetáculos são uma explosão de energia e irreverência que contagia qualquer plateia. Nosso principal objetivo é trazer a essência do carnaval brasileiro para Lisboa, criando experiências inesquecíveis e unindo culturas através da música. Venha se divertir conosco e sentir o verdadeiro espírito festivo que só a Sardinhas Nômades pode proporcionar!",
+      "media": [{ "url": "/band/band1.png", "alt": "Foto da banda 1" }, { "url": "/band/band2.png", "alt": "Foto da banda 2" }, { "url": "/band/band3.png", "alt": "Foto da banda 3" }]
+    },
+    "calendar": { "label": "Agenda", "title": "Agenda", "text": "", "visible": true, "media": [] },
+    "socials": {
+      "label": "Fotos", "title": "Fotos", "text": "", "visible": true,
+      "media": [{ "url": "/gallery/photo1.jpg", "alt": "Foto da galeria 1" }, { "url": "/gallery/photo2.jpg", "alt": "Foto da galeria 2" }, { "url": "/gallery/photo3.jpg", "alt": "Foto da galeria 3" }, { "url": "/gallery/photo4.jpg", "alt": "Foto da galeria 4" }, { "url": "/gallery/photo5.jpg", "alt": "Foto da galeria 5" }, { "url": "/gallery/photo6.jpg", "alt": "Foto da galeria 6" }]
+    },
+    "events": { "label": "Eventos", "title": "Eventos", "text": "", "visible": true, "media": [] },
+    "contact": {
+      "label": "Contato", "title": "Contato", "visible": true, "media": [],
+      "subtitle": "Quer trazer a energia contagiante da Sardinhas Nômades para o seu evento?",
+      "text": "Está ansioso para sentir a batida eletrizante do carnaval brasileiro em Lisboa? Então, entre em contato conosco! Adoramos conhecer novos fãs, fechar parcerias incríveis e levar a nossa festa irreverente para todos os cantos. Preencha o formulário abaixo, mande um e-mail ou nos siga nas redes sociais. Vamos juntos fazer a cidade vibrar com muita música e alegria!"
+    }
+  },
+  "events": [
+    { "id": "carnaval", "title": "Carnaval de Lisboa", "text": "O Cortejo Sardélico já faz parte do calendário cultural de Lisboa, trazendo irreverência, ritmo e muita animação para o carnaval lisboeta. Com performances vibrantes e envolventes, a Sardinhas Nômades transforma as ruas em um verdadeiro espetáculo de música e alegria, contagiando a todos com a essência do carnaval brasileiro. Venha viver essa experiência única conosco!", "image": { "url": "/events/events1.jpg", "alt": "Sardinhas Nômades no Carnaval de Lisboa" } },
+    { "id": "galas", "title": "Galas e Festas", "text": "A Sardinhas Nômades brilha nas galas e eventos mais prestigiados, levando nosso som contagiante e performances inesquecíveis para cada ocasião. Com uma mistura única de ritmos e uma presença de palco inigualável, garantimos que cada festa se torne uma celebração memorável. Junte-se a nós e sinta a energia vibrante que só a nossa fanfarra pode proporcionar!", "image": { "url": "/events/events2.jpg", "alt": "Sardinhas Nômades em uma gala ou festa" } }
+  ],
+  "instagramUrl": "https://www.instagram.com/sardinhas.nomades/",
+  "instagramLabel": "Instagram @sardinhas.nomades",
+  "footerText": "Lisboa, Portugal • A essência do carnaval brasileiro."
+}

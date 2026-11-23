@@ -1,0 +1,23 @@
+.video-gallery { overflow: clip; }
+.video-gallery-text { max-width: 60rem; margin: 1rem auto 2rem; padding-inline: 1rem; }
+.video-gallery .swiper-wrapper { transition-timing-function: linear; }
+.video-gallery .swiper[data-interacting=true] .swiper-wrapper { transition-timing-function: cubic-bezier(.22, 1, .36, 1); }
+.video-gallery-stage { position: relative; width: 100%; }
+.video-gallery .swiper { width: 100%; min-width: 0; overflow: visible; padding-bottom: 3rem; }
+.video-gallery .swiper-slide { width: min(100%, calc(80dvh * 16 / 9)); }
+.video-gallery-item { width: 100%; }
+.video-gallery-frame { position: relative; width: 100%; height: 80vh; height: 80dvh; min-height: 200px; background: #080b0b; border-radius: 1rem; overflow: hidden; }
+.video-gallery-frame > div, .video-gallery-frame iframe, .video-gallery-frame img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-gallery-frame img { object-fit: cover; }
+.video-gallery-error { padding: .5rem 1rem; font-size: .8rem; }
+.video-gallery-error a { color: inherit; text-decoration: underline; }
+.video-gallery-error a svg { display: inline; }
+.video-gallery .video-gallery-arrow { position: absolute; top: calc(40dvh - 28px); z-index: 10; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; padding: 0; margin: 0; border: 0; background: transparent; color: var(--site-title-color); filter: drop-shadow(0 2px 3px #00000080); }
+.video-gallery-prev { left: 1rem; }
+.video-gallery-next { right: 1rem; }
+.video-gallery .swiper-pagination { bottom: .65rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .65rem; }
+.video-gallery .swiper-pagination-bullet { width: 10px; height: 10px; min-width: 10px; padding: 0; margin: 0 !important; border: 0; border-radius: 50%; background: var(--site-title-color); opacity: .35; transition: opacity .2s, transform .2s; }
+.video-gallery .swiper-pagination-bullet-active { opacity: 1; transform: scale(1.2); }
+@media (min-width: 1024px) {
+	.video-gallery .swiper-slide { width: min(80%, calc(80dvh * 16 / 9)); }
+}

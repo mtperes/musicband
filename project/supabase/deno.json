@@ -1,0 +1,7 @@
+{
+  "nodeModulesDir": "none",
+  "imports": {
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2",
+    "@electric-sql/pglite": "npm:@electric-sql/pglite@0.3.14"
+  }
+}

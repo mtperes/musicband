@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="36 4 470 540" width="470" height="540" role="img" aria-labelledby="title">
+  <title id="title">Collective mark</title>
+  <defs>
+    <linearGradient id="logo-gradient" gradientUnits="userSpaceOnUse" x1="36" y1="4" x2="506" y2="544">
+      <stop offset="0%" stop-color="#4e248c">
+        <animate attributeName="stop-color" values="#4e248c;#012b5e;#04bfbf;#ff903e;#ff594b;#4e248c;#012b5e;#04bfbf;#ff903e;#ff594b" dur="90s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#ff594b">
+        <animate attributeName="stop-color" values="#ff594b;#ff903e;#04bfbf;#012b5e;#4e248c;#ff594b;#ff903e;#04bfbf;#012b5e;#4e248c" dur="190s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+    <path id="fish" d="M 368 487 C 200 490 58 235 66 150 C 68 112 92 98 112 116 C 222 168 296 440 283 528" />
+  </defs>
+
+  <g fill="none" stroke="url(#logo-gradient)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <use xlink:href="#fish" href="#fish" />
+    <use xlink:href="#fish" href="#fish" transform="translate(130 -78)" />
+  </g>
+</svg>

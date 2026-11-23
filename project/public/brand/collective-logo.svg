@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="title">
+  <title id="title">Collective logo</title>
+  <defs>
+    <path id="fish" d="M 385 485 C 200 490 58 235 66 150 C 68 112 92 98 112 116 C 222 168 296 440 282 540" />
+    <clipPath id="inside-circle">
+      <circle cx="256" cy="256" r="240" />
+    </clipPath>
+  </defs>
+
+  <g fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke-width="18" clip-path="url(#inside-circle)">
+      <use xlink:href="#fish" href="#fish" />
+      <use xlink:href="#fish" href="#fish" transform="translate(130 -78)" />
+    </g>
+
+    <rect x="16" y="16" width="480" height="480" stroke-width="3" stroke-linejoin="miter" />
+    <circle cx="256" cy="256" r="240" stroke-width="10" />
+  </g>
+</svg>

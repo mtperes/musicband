@@ -1,5 +1,20 @@
 # React + TypeScript + Vite
 
+## Public Calendar
+
+The agenda requests `/api/calendar`. Vite serves this route through its dev/preview
+middleware; Vercel serves it through the external rewrite in `vercel.json`, pointing
+to the same public Google Calendar ICS URL in `vite.config.ts`. Keep those URLs in
+sync if the calendar changes. Direct browser requests to Google are not supported
+because the public feed does not provide a CORS header. Deploy the updated
+`vercel.json` to enable the production route.
+
+`ical.js` expands recurring events, including excluded dates and rescheduled or
+cancelled occurrences, using the feed's timezone definitions. The agenda shows
+the next five upcoming or ongoing occurrences within one year. Use
+`npm run dev:mock` for the local fixture and `npm run test:calendar` for regression
+tests (Node.js 22.6+ required).
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
