@@ -1,4 +1,4 @@
-import { contactSettings, createNodeContactHandler } from '../server/contact';
+import { contactSettings, createNodeContactHandler } from '../server/contact.js';
 
 export default createNodeContactHandler(contactSettings(
   process.env,
